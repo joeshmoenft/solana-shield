@@ -2,7 +2,7 @@
   "name": "Solana Shield",
   "description:": "Protect your SOL address by auto-transferring any Solana that enters your wallet.",
   "repository": "https://github.com/joeshmoenft/solana-shield",
-  "logo": "https://github.com/joeshmoenft/solana-shield/blob/main/logo-medium.png",
+  "logo": "https://raw.githubusercontent.com/joeshmoenft/solana-shield/main/logo-medium.png",
   "keywords": ["solana", "solana shield"],
   "addons": [
       "heroku-redis",
