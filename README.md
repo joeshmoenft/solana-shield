@@ -1,5 +1,7 @@
 # Solana Shield
 
+![](https://github.com/joeshmoenft/solana-shield/blob/main/logo.png)
+
 > Protect your SOL address by auto-transferring any Solana that enters your wallet.
 
 Hi there, welcome to Solana Shield. Solana Shield is an application that automatically 
