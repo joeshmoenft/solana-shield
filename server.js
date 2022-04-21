@@ -10,7 +10,7 @@ const bs58 = require('bs58');
 const wwwhisper = require('connect-wwwhisper');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'), 'confirmed');
+const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed'); //devnet or mainnet-beta
 
 if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_ADDRESS) {
     console.log('Please set your ENV variables.');
