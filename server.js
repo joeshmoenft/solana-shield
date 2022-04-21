@@ -40,8 +40,10 @@ let PORT = process.env.PORT || '5000';
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 let app = express();
-//app.use(wwwhisper());
 
+if (process.env.AUTH_ENABLED) {
+    app.use(wwwhisper());
+}
 // Create / Connect to a named work queue
 let workQueue = new Queue('work', REDIS_URL);
 
