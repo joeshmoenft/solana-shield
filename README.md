@@ -12,6 +12,8 @@ Requirements:
 * Public Address for the Solana account you wish to send funds to (your Recovery Address)
 * $14/month to pay for a Heroku server to host the application (Free server untested)
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
+
 Here's how it works:
 1. Deploy the application to Heroku. 
 2. Set your config vars in Settings > Config Vars.
