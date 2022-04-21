@@ -10,12 +10,18 @@ const bs58 = require('bs58');
 const wwwhisper = require('connect-wwwhisper');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed'); //devnet or mainnet-beta
+ //devnet or mainnet-beta
 
 if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_ADDRESS) {
     console.log('Please set your ENV variables.');
     return;
 }
+
+if (!process.env.NETWORK) {
+    console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
+}
+
+const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl(process.env.NETWORK), 'confirmed');
 
 let shieldedSecret = bs58.decode(process.env.SHIELDED_ACCOUNT_PRIVATE_KEY);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
