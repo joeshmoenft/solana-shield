@@ -1,6 +1,6 @@
 # Solana Shield
 
-![](https://github.com/joeshmoenft/solana-shield/blob/main/logo.png)
+![](https://github.com/joeshmoenft/solana-shield/blob/main/logo-medium.png)
 
 > Protect your SOL address by auto-transferring any Solana that enters your wallet.
 
