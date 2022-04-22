@@ -14,7 +14,10 @@ Use Cases:
 * Protect your staking assets by disallowing any SOL to enter your wallet, thus disabling the ability for a hacker to unstake and move the NFT
 * Get a chance of recovering assets from a compromised wallet
 
+Security Considerations:
+* You are storing your private key in an encrypted variable online. With heroku, this is known to be a very secure way to store these online. Many big applications use this for storing secret API keys and hasn't been hacked as far as we know. One way for the hacker to get your private key through this would be to 1) know you're using Solana Shield, and 2) get access to your e-mail, and 3) get access to your heroku login 2FA code (that you should setup on your account). This is a big deterrant, especially since it's a lot of effort to hack for a  wallet that has 0 SOL in it (which it would if you're running the shield).
 
+This is not intended for cold wallets and you're 'safe' wallet. It's meant for the ones you're connecting to other sites and logging into Phantom apps with. Please get a Ledger and store your assets there, with seed keys stored offline.
 
 
 
