@@ -29,13 +29,19 @@ let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 start();
 
 async function start() {
-    subscriber.subscribe('shield_status', (message) => {
-        if (message == "activated") {
-            activate();
-        } else if (message == "deactivated") {
-            deactivate();
-        }
-    });
+    try {
+        subscriber.subscribe('shield_status', (message) => {
+            console.log('in Subscribe');
+            console.log(message);
+            if (message == "activated") {
+                activate();
+            } else if (message == "deactivated") {
+                deactivate();
+            }
+        });
+    } catch (err) {
+        console.log('Could not subscribe.');
+    }
 }
 
 async function deactivate() {
