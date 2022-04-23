@@ -4,6 +4,8 @@
 
 > Protect your SOL address by auto-transferring any Solana that enters your wallet.
 
+** USE AT YOUR OWN RISK. THIS IS AN 'ALPHA' TECHNOLOGY AND IS YET TO BE AUDITED. **
+
 Hi there, welcome to Solana Shield. Solana Shield is an application that automatically 
 transfers out any Solana in your wallet to a Recovery Address of your choice. Essentially, this acts as a 2-factor-authentication lock for a Solana wallet of your choice.
 
