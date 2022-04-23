@@ -2,8 +2,6 @@
 let express = require('express');
 const solanaWeb3 = require('@solana/web3.js');
 const {Keypair} = require("@solana/web3.js")
-const csv = require('csv-parser');
-const fs = require('fs');
 const bs58 = require('bs58');
 const wwwhisper = require('connect-wwwhisper');
 const festch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
@@ -50,7 +48,7 @@ app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname 
 
 app.get('/status', async (req, res) => {
     console.log('Getting Shield Status...');
-    
+
         try {
             let shield_status = await client.get('shield_status');
             return res.send(shield_status);
