@@ -8,7 +8,7 @@ const festch = (...args) => import('node-fetch').then(({default: fetch}) => fetc
 const redis = require('redis');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
 
-let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+let REDIS_URL = process.env.REDIS_URL; //|| 'redis://127.0.0.1:6379';
 
 if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_ADDRESS) {
     console.log('Please set your ENV variables.');

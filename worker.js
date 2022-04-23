@@ -5,7 +5,7 @@ const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
 
 const redis = require('redis');
-let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+let REDIS_URL = process.env.REDIS_URL; // || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({REDIS_URL});
 subscriber.connect();
 
