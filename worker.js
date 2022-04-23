@@ -9,6 +9,11 @@ let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
+subscriber.on('error', err => console.error('subscriber error', err));
+subscriber.on('connect', () => console.log('subscriber is connect'));
+subscriber.on('reconnecting', () => console.log('subscriber is reconnecting'));
+subscriber.on('ready', () => console.log('subscriber is ready'));
+
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
 }
@@ -29,19 +34,16 @@ let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 start();
 
 async function start() {
-    try {
-        subscriber.subscribe('shield_status', (message) => {
-            console.log('in Subscribe');
-            console.log(message);
-            if (message == "activated") {
-                activate();
-            } else if (message == "deactivated") {
-                deactivate();
-            }
-        });
-    } catch (err) {
-        console.log('Could not subscribe.');
-    }
+
+    subscriber.subscribe('shield_status', (message) => {
+        console.log('in Subscribe');
+        console.log(message);
+        if (message == "activated") {
+            activate();
+        } else if (message == "deactivated") {
+            deactivate();
+        }
+    });
 }
 
 async function deactivate() {

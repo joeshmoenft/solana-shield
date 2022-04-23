@@ -36,6 +36,11 @@ let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
+client.on('error', err => console.error('client error', err));
+client.on('connect', () => console.log('client is connect'));
+client.on('reconnecting', () => console.log('client is reconnecting'));
+client.on('ready', () => console.log('client is ready'));
+
 let app = express();
 
 if (process.env.AUTH_ENABLED == 'true') {
