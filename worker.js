@@ -11,12 +11,6 @@ let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
-
-subscriber.on('error', err => console.error('subscriber error', err));
-subscriber.on('connect', () => console.log('subscriber is connect'));
-subscriber.on('reconnecting', () => console.log('subscriber is reconnecting'));
-subscriber.on('ready', () => console.log('subscriber is ready'));
-
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
 }
@@ -33,30 +27,35 @@ let shieldedSecret = bs58.decode(process.env.SHIELDED_ACCOUNT_PRIVATE_KEY);
 let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 
+let currentStatus = "deactivated";
 
 start();
 
 async function start() {
+    setInterval(() => {
+        checkShieldStatus();
+    }, 1000);
+}
 
-    console.log('we started');
+async function checkShieldStatus() {
+    let status = await subscriber.get("shield_status");
 
-    subscriber.subscribe('shield_status', (message) => {
-        console.log('in Subscribe');
-        console.log(message);
-        if (message == "activated") {
-            activate();
-        } else if (message == "deactivated") {
-            deactivate();
-        }
-    });
+    if (status !== currentStatus && status == "activated") {
+        activate();
+    } else if (status !== currentStatus && status == "deactivated") {
+        deactivate();
+    }
 }
 
 async function deactivate() {
     console.log('xxxx SHIELD DEACTIVATED xxxx');
+    currentStatus = "deactivated";
 }
 
 async function activate() {
     console.log('||||| Shield Activated |||||');
+
+    currentStatus = "activated";
     //Get current balance
     const balance = await connection.getBalance(shieldedAccount.publicKey);
     console.log('Current balance: %s', balance);
