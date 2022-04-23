@@ -33,7 +33,7 @@ console.log('Recovery account: %s', recoveryAccount);
 
 // Serve on PORT on Heroku and on localhost:5000 locally
 let PORT = process.env.PORT || '5000';
-const client = redis.createClient(REDIS_URL);
+const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
 let app = express();

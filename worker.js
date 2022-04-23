@@ -7,7 +7,7 @@ const path = require('path');  require('dotenv').config({ path:path.join(__dirna
 const redis = require('redis');
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 console.log(REDIS_URL);
-const subscriber = redis.createClient(REDIS_URL);
+const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
 if (!process.env.NETWORK) {
