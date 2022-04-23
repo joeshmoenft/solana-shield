@@ -5,11 +5,13 @@ const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
 
 const redis = require('redis');
+console.log('Worker starting...');
+
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
-console.log('Worker starting...');
+
 subscriber.on('error', err => console.error('subscriber error', err));
 subscriber.on('connect', () => console.log('subscriber is connect'));
 subscriber.on('reconnecting', () => console.log('subscriber is reconnecting'));
