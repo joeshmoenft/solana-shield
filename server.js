@@ -1,16 +1,16 @@
 
 let express = require('express');
-let Queue = require('bull');
-
 const solanaWeb3 = require('@solana/web3.js');
 const {Keypair} = require("@solana/web3.js")
 const csv = require('csv-parser');
 const fs = require('fs');
 const bs58 = require('bs58');
 const wwwhisper = require('connect-wwwhisper');
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const festch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const redis = require('redis');
+const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
 
- //devnet or mainnet-beta
+let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_ADDRESS) {
     console.log('Please set your ENV variables.');
@@ -30,73 +30,55 @@ let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 
 const walletAddress = shieldedAccount.publicKey.toString();
 
-console.log('Initializing shield...');
 console.log('Protecting account: %s', shieldedAccount.publicKey);
 console.log('Recovery account: %s', recoveryAccount);
 
 // Serve on PORT on Heroku and on localhost:5000 locally
 let PORT = process.env.PORT || '5000';
-// Connect to a local redis intance locally, and the Heroku-provided URL in production
-let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+const client = redis.createClient({REDIS_URL});
+client.connect();
 
 let app = express();
 
 if (process.env.AUTH_ENABLED == 'true') {
     app.use(wwwhisper());
 }
-// Create / Connect to a named work queue
-let workQueue = new Queue('work', REDIS_URL);
 
 // Serve the two static assets
 app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
 
-// Kick off a new job by adding it to the work queue
-app.post('/job', async (req, res) => {
-    console.log('Starting job...');
-
+app.get('/status', async (req, res) => {
+    console.log('Getting Shield Status...');
+    
         try {
-            let job = await workQueue.add({}, {repeat: { every: 5000 }
-            });
+            let shield_status = await client.get('shield_status');
+            return res.send(shield_status);
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+});
+
+app.post('/activate', async (req, res) => {
+    console.log('Activating Shield...');
+        try {
+            await client.set('shield_status', 'activated');
+            await client.publish('shield_status', 'activated');
         } catch (err) {
             console.log(err);
         }
 });
 
-app.post('/job/stop', async() => {
-    console.log('Stopping Solana Shield...');
-    workQueue.empty().then(function () {
-        console.log('Stopped.');
-    });
-});
-// Allows the client to query the state of a background job
-app.get('/job/:id', async (req, res) => {
-    
-  let id = req.params.id;
-  let job = await workQueue.getJob(id);
-
-  if (job === null) {
-    res.status(404).end();
-  } else {
-    let state = await job.getState();
-    let progress = job._progress;
-    let reason = job.failedReason;
-    res.json({ id, state, progress, reason });
-  }
+app.post('/deactivate', async (req, res) => {
+    console.log('Deactivating Shield...');
+        try {
+            await client.set('shield_status', 'deactivated');
+            await client.publish('shield_status', 'deactivated');
+        } catch (err) {
+            console.log(err);
+        }
 });
 
-workQueue.on('global:completed', async (jobId, result) => {
-  console.log('Check complete.');
-});
-
-
-//empty the queue on launch
-try {
-    let empty = workQueue.empty();
-} catch (err) {
-    console.log(err);
-}
-
-
-
-app.listen(PORT, () => console.log("Server started. Watching..."));
+client.set('shield_status', 'deactivated');
+app.listen(PORT, () => console.log("Server started. Watching...%s", PORT));
