@@ -38,6 +38,8 @@ start();
 
 async function start() {
 
+    console.log('we started');
+
     subscriber.subscribe('shield_status', (message) => {
         console.log('in Subscribe');
         console.log(message);
