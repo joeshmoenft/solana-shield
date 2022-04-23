@@ -36,11 +36,6 @@ let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
-client.on('error', err => console.error('client error', err));
-client.on('connect', () => console.log('client is connect'));
-client.on('reconnecting', () => console.log('client is reconnecting'));
-client.on('ready', () => console.log('client is ready'));
-
 let app = express();
 
 if (process.env.AUTH_ENABLED == 'true') {
@@ -67,7 +62,6 @@ app.post('/activate', async (req, res) => {
     console.log('Activating Shield...');
         try {
             await client.set('shield_status', 'activated');
-            await client.publish('shield_status', 'activated');
         } catch (err) {
             console.log(err);
         }
@@ -77,7 +71,6 @@ app.post('/deactivate', async (req, res) => {
     console.log('Deactivating Shield...');
         try {
             await client.set('shield_status', 'deactivated');
-            await client.publish('shield_status', 'deactivated');
         } catch (err) {
             console.log(err);
         }
