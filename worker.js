@@ -5,7 +5,6 @@ const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
 
 const redis = require('redis');
-console.log('Worker starting...');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
@@ -28,10 +27,19 @@ let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 
 let currentStatus = "deactivated";
+let accountChangeListenerID;
 
 start();
 
 async function start() {
+    console.log('Solana Shield Booting Up....');
+    console.log('----------------------------');
+    console.log('Protect account: %s', shieldedAccount.publicKey);
+    console.log('Recovery account: %s', recoveryAccount);
+    console.log('----------------------------');
+    console.log('Solana Shield Initialized...Activate to start protecting.');
+    console.log('----------------------------');
+
     setInterval(() => {
         checkShieldStatus();
     }, 1000);
@@ -48,32 +56,49 @@ async function checkShieldStatus() {
 }
 
 async function deactivate() {
-    console.log('xxxx SHIELD DEACTIVATED xxxx');
-    currentStatus = "deactivated";
+
+    try {
+            await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
+            console.log('xxxx SHIELD DEACTIVATED xxxx');
+            currentStatus = "deactivated";
+        });
+
+    } catch (err) {
+        console.log('Could not deactivate the shield for some reason.');
+        console.log(err);
+    }
+
 }
 
 async function activate() {
-    console.log('||||| Shield Activated |||||');
 
-    currentStatus = "activated";
-    //Get current balance
-    const balance = await connection.getBalance(shieldedAccount.publicKey);
-    console.log('Current balance: %s', balance);
+    try {
+        console.log('||||| Shield Activated |||||');
 
-    checkBalanceToProtect(balance);
-
-    //When new transaction is detected, run this
-    connection.onAccountChange(
-        shieldedAccount.publicKey,
-        ( updatedAccountInfo, context ) => {
-            //when SOL value changes, do something
-            let balance = updatedAccountInfo.lamports;
-            if (balance !== 0) {
-                checkBalanceToProtect(balance);
-            }
-        },
-        'confirmed',
-    );
+        currentStatus = "activated";
+        //Get current balance
+        const balance = await connection.getBalance(shieldedAccount.publicKey);
+        console.log('Current balance: %s', balance);
+    
+        checkBalanceToProtect(balance);
+    
+        //When new transaction is detected, run this
+        accountChangeListenerID = connection.onAccountChange(
+            shieldedAccount.publicKey,
+            ( updatedAccountInfo, context ) => {
+                //when SOL value changes, do something
+                let balance = updatedAccountInfo.lamports;
+                if (balance !== 0) {
+                    checkBalanceToProtect(balance);
+                }
+            },
+            'confirmed',
+        );
+    } catch (err) {
+        console.log('Could not activate shield for some reason.');
+        console.log(err);
+    }
+   
 }
 
 async function checkBalanceToProtect(balance) {
@@ -84,6 +109,7 @@ async function checkBalanceToProtect(balance) {
         shieldTransaction(balance - fee, shieldedAccount, recoveryAccount);
     } else if (balance == 0) {
         console.log('No SOL exists in wallet, doing nothing.');
+        console.log('Watching...');
     }
 }
 
