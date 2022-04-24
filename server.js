@@ -15,8 +15,6 @@ let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
-const next = require('next');
-
 let app = express();
 
 
@@ -27,12 +25,14 @@ if (process.env.AUTH_ENABLED == 'true') {
 // Serve the two static assets
 app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
+app.get('/shield_status_indicator.js', (req, res) => res.sendFile('shield_status_indicator.js', { root: __dirname }));
 
 app.get('/status', async (req, res) => {
-    console.log('Getting Shield Status...');
+    //console.log('Getting Shield Status...');
 
         try {
             let shield_status = await client.get('shield_status');
+            //console.log(shield_status);
             return res.send(shield_status);
         } catch (err) {
             console.log(err);

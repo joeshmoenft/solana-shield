@@ -31,7 +31,7 @@ async function getShieldStatus() {
 }
 
 window.onload = function() {
-  getShieldStatus();
+  //getShieldStatus();
   document.querySelector("#enable-shield").addEventListener("click", enableShield);
   document.querySelector("#disable-shield").addEventListener("click", disableShield);
 };
