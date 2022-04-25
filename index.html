@@ -13,6 +13,7 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
    <!-- Load our React component. -->
    <script src="shield_status_indicator.js" async></script>
+ 
 </head>
 <body id="bg-color" class="bg-black code white">
   <div class="main-content flex flex-column justify-center items-center w-100 mt4">
@@ -23,6 +24,22 @@
       <div id="shield_status_container"></div>
     </div>
     <div id="shield-status" class="w-80 f3"></div>
+    <div id="shield-logs"></div>
   </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+   var socket = io();
+
+   var logs = document.getElementById('shield-logs');
+
+   socket.on('log', function(msg) {
+    var item = document.createElement('p');
+    console.log(msg);
+    item.textContent = msg;
+    logs.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+
+ </script>
 </body>
 </html>

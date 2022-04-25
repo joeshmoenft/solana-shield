@@ -10,6 +10,15 @@ let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
+const { io } = require("socket.io-client");
+var client = io.connect("http://localhost:5100");
+
+client.on( 'connect', function () {
+    client.emit( 'log', "Worker connecting...");
+} );
+
+client.emit('log', 'test');
+
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
 }
@@ -165,5 +174,9 @@ async function addTotalShielded(balance) {
     }
 }
 
+function log(socket, data) {
+    console.log(data);
+    socket.emit('log', data);
+}
 
 
