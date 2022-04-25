@@ -10,14 +10,13 @@ let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
-const { io } = require("socket.io-client");
-var client = io.connect("http://localhost:5100");
-
-client.on( 'connect', function () {
-    client.emit( 'log', "Worker connecting...");
-} );
-
-client.emit('log', 'test');
+//var socket = io.connect('http://localhost:5100');
+var socket = require('socket.io-client')('http://localhost:5100');
+socket.on('connect', function(){ 
+    console.log('Worker connected to socket.');
+});
+socket.on('event', function(data){});
+socket.on('disconnect', function(){});
 
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
@@ -77,6 +76,7 @@ async function deactivate() {
         await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
             currentStatus = "deactivated";
+            socket.emit('log', 'Shield Deactivated.');
         });
 
     } catch (err) {
@@ -114,6 +114,7 @@ async function activate() {
 
         await subscriber.set('shield_status', 'activated');
         await subscriber.set('set-next-action', 'none');
+        socket.emit('log', 'Shield Activated.');
 
 
     } catch (err) {
@@ -156,6 +157,8 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Shielded %d SOL', amount / 1000000000 );
         console.log('Transaction ID: %s', result);
         console.log('SOL balance is now 0. Suck it hackers.');
+        socket.emit('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
+
         addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
     } catch(err) {

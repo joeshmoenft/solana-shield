@@ -30,6 +30,13 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 io.on('connection', (socket) => {
+    let msg;
+
+    socket.on('log', (arg) => {
+        console.log('Received log event from client.');
+        console.log(arg);
+        socket.broadcast.emit('log', arg);
+    });
     //connected
     io.emit('log', 'Server online.');
 });
