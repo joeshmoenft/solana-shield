@@ -11,18 +11,19 @@ class ShieldStatus extends React.Component {
   componentDidMount() {
 
     const getShieldStatus = async () => {
-        const response = await fetch('status/', {method: 'GET'});
 
+        const response = await fetch('status/', {method: 'GET'});
         const shield_status = await response.text();
 
+        if (shield_status !== this.state.status){
+            this.setState({
+                status: shield_status
+            });
+        }
         //console.log(shield_status);
-        
-        this.setState({
-            status: shield_status
-        });
     };
 
-    //getShieldStatus();
+    //isn't very  efficient. perhaps try pubsub again for this
     this.interval = setInterval(() => getShieldStatus(), 1000);
   }
 
