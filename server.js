@@ -26,6 +26,8 @@ if (process.env.AUTH_ENABLED == 'true') {
 app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
 app.get('/shield_status_indicator.js', (req, res) => res.sendFile('shield_status_indicator.js', { root: __dirname }));
+app.get('/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: __dirname }));
+app.get('/total_shielded.js', (req, res) => res.sendFile('total_shielded.js', { root: __dirname }));
 
 app.get('/status', async (req, res) => {
     //console.log('Getting Shield Status...');
@@ -40,10 +42,22 @@ app.get('/status', async (req, res) => {
         }
 });
 
+app.get('/total', async (req, res) => {
+
+        try {
+            let totalShielded = await client.get('totalShielded');
+            return res.send(totalShielded);
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+});
+
 app.post('/activate', async (req, res) => {
     console.log('Activating Shield...');
         try {
-            await client.set('shield_status', 'activated');
+            await client.set('set-next-action', 'activate');
+            //await client.set('shield_status', 'activated');
         } catch (err) {
             console.log(err);
         }
@@ -52,13 +66,14 @@ app.post('/activate', async (req, res) => {
 app.post('/deactivate', async (req, res) => {
     console.log('Deactivating Shield...');
         try {
-            await client.set('shield_status', 'deactivated');
+            await client.set('set-next-action', 'deactivate');
+            //await client.set('shield_status', 'deactivated');
         } catch (err) {
             console.log(err);
         }
 });
 
-client.set('shield_status', 'deactivated');
+client.set('set-next-action', 'nothing');
 app.listen(PORT, () => {
     console.log("API server started on port %s", PORT);
     console.log("")

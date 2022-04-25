@@ -10,18 +10,18 @@
   <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
    <!-- Load our React component. -->
    <script src="shield_status_indicator.js" async></script>
+   <script src="total_shielded.js" async></script>
 </head>
-<body id="bg-color" class="bg-near-black code white">
+<body id="bg-color" class="bg-black code white">
   <div class="main-content flex flex-column justify-center items-center w-100 mt4">
     <div class='br2 flex flex-column items-center pv3'>
+      <img src="logo-medium.png" width="200" height="200" />
       <div class='f1 mt2 mb1'>Solana Shield</div>
+      <div id="total-shielded"></div>
       <div id="shield_status_container"></div>
-      <div class='flex mt4'>
-        <a href='#' id="enable-shield" class='f2 link white ph2 pv1 ba b--white br1 mr4'>Enable Shield</a>
-        <a href='#' id="disable-shield" style="visibility: hidden" class='f2 link white ph2 pv1 ba b--white br1'>Disable Shield</a>
-      </div>
     </div>
     <div id="shield-status" class="w-80 f3"></div>
   </div>

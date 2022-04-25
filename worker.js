@@ -32,6 +32,9 @@ let accountChangeListenerID;
 start();
 
 async function start() {
+    await subscriber.set('shield_status', 'deactivated');
+    await subscriber.set('set-next-action', 'none');
+
     console.log('Solana Shield Booting Up....');
     console.log('----------------------------');
     console.log('Protect account: %s', shieldedAccount.publicKey);
@@ -46,11 +49,11 @@ async function start() {
 }
 
 async function checkShieldStatus() {
-    let status = await subscriber.get("shield_status");
+    let nextAction = await subscriber.get("set-next-action");
 
-    if (status !== currentStatus && status == "activated") {
+    if (nextAction !== currentStatus && nextAction === "activate") {
         activate();
-    } else if (status !== currentStatus && status == "deactivated") {
+    } else if (nextAction !== currentStatus && nextAction == "deactivate") {
         deactivate();
     }
 }
@@ -58,12 +61,17 @@ async function checkShieldStatus() {
 async function deactivate() {
 
     try {
-            await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
+
+        let isDeactivated = await subscriber.set("shield_status", "deactivated");
+        let cancelNextAction = await subscriber.set("set-next-action", "none");
+        
+        await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
             currentStatus = "deactivated";
         });
 
     } catch (err) {
+        let isDeactivated = await subscriber.set("shield_status", "activated");
         console.log('Could not deactivate the shield for some reason.');
         console.log(err);
     }
@@ -71,7 +79,6 @@ async function deactivate() {
 }
 
 async function activate() {
-
     try {
         console.log('||||| Shield Activated |||||');
 
@@ -81,7 +88,8 @@ async function activate() {
         console.log('Current balance: %s', balance);
     
         checkBalanceToProtect(balance);
-    
+
+ 
         //When new transaction is detected, run this
         accountChangeListenerID = connection.onAccountChange(
             shieldedAccount.publicKey,
@@ -94,7 +102,13 @@ async function activate() {
             },
             'confirmed',
         );
+
+        await subscriber.set('shield_status', 'activated');
+        await subscriber.set('set-next-action', 'none');
+
+
     } catch (err) {
+        await subscriber.set("shield_status", "disactivated");
         console.log('Could not activate shield for some reason.');
         console.log(err);
     }
@@ -102,6 +116,7 @@ async function activate() {
 }
 
 async function checkBalanceToProtect(balance) {
+
     if (balance < 0.000005 && balance > 0) {
         console.log('We found SOL in your wallet, but its so tiny we cannot make a transaction');
     } else if (balance > 0.000005) {
@@ -132,11 +147,22 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Shielded %d SOL', amount / 1000000000 );
         console.log('Transaction ID: %s', result);
         console.log('SOL balance is now 0. Suck it hackers.');
+        addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
     } catch(err) {
         console.log('Cannot transfer funds, probably not enough SOL.');
     }
 
+}
+
+async function addTotalShielded(balance) {
+    try {
+        let currentTotalShielded = await subscriber.get('totalShielded');
+        currentTotalShielded += balance;
+        let result = await subscriber.set('totalShielded', currentTotalShielded);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 

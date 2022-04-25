@@ -14,6 +14,8 @@ class ShieldStatus extends React.Component {
         const response = await fetch('status/', {method: 'GET'});
 
         const shield_status = await response.text();
+
+        //console.log(shield_status);
         
         this.setState({
             status: shield_status
@@ -32,14 +34,32 @@ class ShieldStatus extends React.Component {
       if (this.state.status == "uninitialized") {
           return 'Loading...'; 
       } else if (this.state.status == "activated") {
-          return 'Activated'; //button?
+          return e('button',
+          { onClick: () => disableShield() },
+          'Deactivate'
+          );
       } else if (this.state.status == "deactivated") {
-          return 'Deactivated'; //button?
+          return e('button',
+          { onClick: () => enableShield() },
+          'Activate'
+          );
       } else {
           return this.state.status.toString();
       }
   }
 }
+
+
+async function enableShield() {
+    console.log('Clicked Enable Shield');
+    let res = await fetch('activate/', {method: 'POST'});
+}
+
+async function disableShield() {
+    console.log('Clicked Disable Shield');
+    let res = await fetch('deactivate/', {method: 'POST'});
+}
+
 
 const domContainer = document.querySelector('#shield_status_container');
 const root = ReactDOM.createRoot(domContainer);
