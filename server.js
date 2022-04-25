@@ -9,6 +9,8 @@ const redis = require('redis');
 const path = require('path');const { isInAmpMode } = require('next/amp');
   require('dotenv').config({ path:path.join(__dirname, '.env') });
 
+const twilio = require('./twilio')
+
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
 // Serve on PORT on Heroku and on localhost:5000 locally
@@ -29,13 +31,15 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
+var logs = [];
+
 io.on('connection', (socket) => {
-    let msg;
 
     socket.on('log', (arg) => {
         console.log('Received log event from client.');
         console.log(arg);
         socket.broadcast.emit('log', arg);
+        logs.push(arg);
     });
     //connected
     io.emit('log', 'Server online.');
@@ -50,11 +54,9 @@ app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
 app.get('/shield_status_indicator.js', (req, res) => res.sendFile('shield_status_indicator.js', { root: __dirname }));
 app.get('/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: __dirname }));
-app.get('/total_shielded.js', (req, res) => res.sendFile('total_shielded.js', { root: __dirname }));
 app.get('/node_modules/socket.io/client-dist/socket.io.js', (req, res) => res.sendFile('node_modules/socket.io/client-dist/socket.io.js', { root: __dirname }));
 app.get('/status', async (req, res) => {
     //console.log('Getting Shield Status...');
-
         try {
             let shield_status = await client.get('shield_status');
             //console.log(shield_status);
@@ -108,8 +110,4 @@ function log(socket, data) {
     socket.emit('log', data);
 }
 
-/** 
-app.listen(PORT, () => {
-    console.log("API server started on port %s", PORT);
-});
-*/
+twilio.sendSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');

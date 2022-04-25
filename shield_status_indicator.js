@@ -1,6 +1,6 @@
 'use strict';
 
-const e = React.createElement;
+let e = React.createElement;
 
 class ShieldStatus extends React.Component {
   constructor(props) {
@@ -62,6 +62,6 @@ async function disableShield() {
 }
 
 
-const domContainer = document.querySelector('#shield_status_container');
-const root = ReactDOM.createRoot(domContainer);
+let domContainer = document.querySelector('#shield_status_container');
+let root = ReactDOM.createRoot(domContainer);
 root.render(e(ShieldStatus));

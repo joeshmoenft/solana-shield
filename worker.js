@@ -3,7 +3,7 @@ const {Keypair} = require("@solana/web3.js")
 const fs = require('fs');
 const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
-
+const twilio = require ('./twilio.js');
 const redis = require('redis');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -43,6 +43,7 @@ async function start() {
     await subscriber.set('shield_status', 'deactivated');
     await subscriber.set('set-next-action', 'none');
 
+    twilio.sendSMS('Solana Shield Worker started. If you arent just setting this up, look into this.');
     console.log('Solana Shield Booting Up....');
     console.log('----------------------------');
     console.log('Protect account: %s', shieldedAccount.publicKey);
@@ -67,9 +68,7 @@ async function checkShieldStatus() {
 }
 
 async function deactivate() {
-
     try {
-
         let isDeactivated = await subscriber.set("shield_status", "deactivated");
         let cancelNextAction = await subscriber.set("set-next-action", "none");
         
@@ -77,6 +76,7 @@ async function deactivate() {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
             currentStatus = "deactivated";
             socket.emit('log', 'Shield Deactivated.');
+            twilio.sendSMS('Solana Shield Deactivated.');
         });
 
     } catch (err) {
@@ -115,6 +115,7 @@ async function activate() {
         await subscriber.set('shield_status', 'activated');
         await subscriber.set('set-next-action', 'none');
         socket.emit('log', 'Shield Activated.');
+        twilio.sendSMS('Solana Shield activated.');
 
 
     } catch (err) {
@@ -158,11 +159,14 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Transaction ID: %s', result);
         console.log('SOL balance is now 0. Suck it hackers.');
         socket.emit('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
+        twilio.sendSMS('Solana Shield protected ' + amount / 1000000000 + ' SOL');
+        twilio.sendSMS('https://solscan.io/' + result);
 
         addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
     } catch(err) {
-        console.log('Cannot transfer funds, probably not enough SOL.');
+        console.log('Cannot transfer funds, probably not enough SOL. Trying to shield a lower amount.');
+        shieldTransaction(amount - 10000, shieldedAccountKeypair, recoveryAccount);
     }
 
 }
