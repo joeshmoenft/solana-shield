@@ -37,9 +37,11 @@ let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 let currentStatus = "deactivated";
 let accountChangeListenerID;
 
+let socket;
+
 start();
 
-let socket;
+
 
 async function start() {
 
@@ -49,6 +51,10 @@ async function start() {
     socket = require('socket.io-client')('http://localhost:' + port);
     socket.on('connect', function(){ 
         console.log('Worker connected to socket.');
+    });
+    socket.on('error', (error) => {
+        console.log('Worker socket error');
+        console.log(error);
     });
     socket.on('event', function(data){});
     socket.on('disconnect', function(){});
