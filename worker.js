@@ -39,25 +39,27 @@ let accountChangeListenerID;
 
 let socket;
 
+var port = subscriber.get('server-port');
+console.log('Socket Port to connect to:');
+console.log(port);
+socket = require('socket.io-client')('http://localhost:' + port);
+socket.on('connect', function(){ 
+    console.log('Worker connected to socket.');
+});
+socket.on('error', (error) => {
+    console.log('Worker socket error');
+    console.log(error);
+});
+socket.on('event', function(data){});
+socket.on('disconnect', function(){});
+
 start();
 
 
 
 async function start() {
 
-    var port = await subscriber.get('server-port');
-    console.log('Socket Port to connect to:');
-    console.log(port);
-    socket = require('socket.io-client')('http://localhost:' + port);
-    socket.on('connect', function(){ 
-        console.log('Worker connected to socket.');
-    });
-    socket.on('error', (error) => {
-        console.log('Worker socket error');
-        console.log(error);
-    });
-    socket.on('event', function(data){});
-    socket.on('disconnect', function(){});
+ 
 
     await subscriber.set('shield_status', 'deactivated');
     await subscriber.set('set-next-action', 'none');
