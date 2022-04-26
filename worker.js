@@ -51,7 +51,6 @@ pubsub.subscribe('shield-status', (message) => {
     console.log(message);
 });
 
-
 start();
 
 async function start() {
