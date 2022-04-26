@@ -44,6 +44,11 @@
 
    var logs = document.getElementById('shield-logs');
 
+   socket.on('error', function(error) {
+     console.log('Socket connect error');
+     console.log(error);
+   });
+
    socket.on('log', function(msg) {
     var item = document.createElement('p');
     //console.log(msg);
