@@ -14,7 +14,7 @@ const twilio = require('./twilio')
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
 // Serve on PORT on Heroku and on localhost:5000 locally
-let PORT = process.env.PORT || '5000';
+let PORT = '80';
 const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
@@ -44,6 +44,9 @@ io.on('connection', (socket) => {
     //connected
     io.emit('log', 'Server online.');
 });
+
+console.log('Server port:');
+console.log(PORT);
 
 server.listen(PORT, () => {
     console.log('Server started...listening on %d', PORT);
@@ -83,8 +86,8 @@ app.post('/activate', async (req, res) => {
     io.emit('log', 'Activating Shield...');
 
         try {
-            await client.set('set-next-action', 'activate');
-            await client.publish('shield-status', 'changed');
+             await client.set('set-next-action', 'activate');
+             await client.publish('shield-status', 'changed');
             //await client.set('shield_status', 'activated');
         } catch (err) {
             console.log(err);
