@@ -11,10 +11,10 @@ const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
 //var socket = io.connect('http://localhost:5100');
-var port = process.env.PORT;
+var port = '5100';
 console.log('PORT:');
 console.log(port);
-var socket = require('socket.io-client')('http://localhost:' + process.env.PORT);
+var socket = require('socket.io-client')('http://localhost:' + port);
 socket.on('connect', function(){ 
     console.log('Worker connected to socket.');
 });

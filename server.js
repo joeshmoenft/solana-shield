@@ -29,6 +29,7 @@ if (process.env.AUTH_ENABLED == 'true') {
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { resolve } = require('path');
 const io = new Server(server);
 
 var logs = [];
@@ -66,7 +67,6 @@ app.get('/status', async (req, res) => {
             return res.send(shield_status);
         } catch (err) {
             console.log(err);
-            res.sendStatus(500);
         }
 });
 
@@ -88,9 +88,11 @@ app.post('/activate', async (req, res) => {
         try {
              await client.set('set-next-action', 'activate');
              await client.publish('shield-status', 'changed');
+             res.sendStatus(200);
             //await client.set('shield_status', 'activated');
         } catch (err) {
             console.log(err);
+            res.sendStatus(500);
         }
 });
 
@@ -101,8 +103,10 @@ app.post('/deactivate', async (req, res) => {
             await client.set('set-next-action', 'deactivate');
             await client.publish('shield-status', 'changed');
             //await client.set('shield_status', 'deactivated');
+            res.sendStatus(200);
         } catch (err) {
             console.log(err);
+            res.sendStatus(500);
         }
 });
 
