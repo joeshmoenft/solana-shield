@@ -53,6 +53,7 @@ server.listen(PORT, () => {
     console.log('Server started...listening on %d', PORT);
 });
 
+client.set('server-port', PORT);
 // Serve the two static assets
 app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));

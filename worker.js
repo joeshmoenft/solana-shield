@@ -15,17 +15,8 @@ pubsub.connect();
 
 //var socket = io.connect('http://localhost:5100');
 
-/** 
-var port = process.env.PORT;
-console.log('PORT:');
-console.log(port);
-var socket = require('socket.io-client')('http://localhost:' + port);
-socket.on('connect', function(){ 
-    console.log('Worker connected to socket.');
-});
-socket.on('event', function(data){});
-socket.on('disconnect', function(){});
-*/
+
+
 
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
@@ -48,7 +39,20 @@ let accountChangeListenerID;
 
 start();
 
+let socket;
+
 async function start() {
+
+    var port = await subscriber.get('server-port');
+    console.log('Socket Port to connect to:');
+    console.log(port);
+    socket = require('socket.io-client')('http://localhost:' + port);
+    socket.on('connect', function(){ 
+        console.log('Worker connected to socket.');
+    });
+    socket.on('event', function(data){});
+    socket.on('disconnect', function(){});
+
     await subscriber.set('shield_status', 'deactivated');
     await subscriber.set('set-next-action', 'none');
 
@@ -100,7 +104,7 @@ async function deactivate() {
         await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
             currentStatus = "deactivated";
-            //socket.emit('log', 'Shield Deactivated.');
+            socket.emit('log', 'Shield Deactivated.');
             twilio.sendSMS('Solana Shield Deactivated.');
         });
 
@@ -141,7 +145,7 @@ async function activate() {
         await subscriber.set('shield_status', 'activated');
         await subscriber.set('set-next-action', 'none');
         await subscribeToShieldStatus();
-        //socket.emit('log', 'Shield Activated.');
+        socket.emit('log', 'Shield Activated.');
         twilio.sendSMS('Solana Shield activated.');
 
     } catch (err) {
@@ -187,7 +191,7 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Shielded %d SOL', amount / 1000000000 );
         console.log('Transaction ID: %s', result);
         console.log('SOL balance is now 0. Suck it hackers.');
-        //socket.emit('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
+        socket.emit('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
         twilio.sendSMS('Solana Shield protected ' + amount / 1000000000 + ' SOL');
         twilio.sendSMS('https://solscan.io/' + result);
 
@@ -220,7 +224,7 @@ async function addTotalShielded(balance) {
 
 function log(socket, data) {
     console.log(data);
-    //socket.emit('log', data);
+    socket.emit('log', data);
 }
 
 
