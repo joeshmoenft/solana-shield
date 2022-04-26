@@ -6,6 +6,7 @@
   "keywords": ["solana", "solana shield"],
   "addons": [
       "heroku-redis",
-      "wwwhisper:solo"
+      "wwwhisper:solo",
+      "betteruptime:test"
     ]
   }

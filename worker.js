@@ -141,6 +141,8 @@ async function checkBalanceToProtect(balance) {
 
 async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount) {
 
+    let attempt = 0;
+
     //Create Simple Transaction
     let transaction = new solanaWeb3.Transaction();
 
@@ -154,6 +156,7 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
     }));
     
     try {
+        attempt++;
         let result = await solanaWeb3.sendAndConfirmTransaction(connection, transaction, [shieldedAccountKeypair])
         console.log('Shielded %d SOL', amount / 1000000000 );
         console.log('Transaction ID: %s', result);
@@ -166,7 +169,14 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         return amount / 1000000000;
     } catch(err) {
         console.log('Cannot transfer funds, probably not enough SOL. Trying to shield a lower amount.');
-        shieldTransaction(amount - 10000, shieldedAccountKeypair, recoveryAccount);
+        if (attempt > 3) {
+            shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
+        } else if (attempt > 10) {
+            console.log('Could not shield.');
+            twilio.sendSMS('Could not shield transaction. Check your server logs and SOL wallet immediately.');  
+        } else {
+            shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
+        }
     }
 
 }
