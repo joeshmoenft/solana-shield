@@ -11,7 +11,6 @@ class ShieldStatus extends React.Component {
   componentDidMount() {
 
     //Get the status of the Shield on page open
-
     this.getShieldStatus();
     //isn't very  efficient. perhaps try pubsub again for this
     //this.interval = setInterval(() => getShieldStatus(), 1000);
@@ -94,8 +93,6 @@ class ShieldStatus extends React.Component {
   }
 
 }
-
-
 
 let domContainer = document.querySelector('#shield_status_container');
 let root = ReactDOM.createRoot(domContainer);

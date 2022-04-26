@@ -63,14 +63,21 @@ async function start() {
     console.log('Solana Shield Initialized...Activate to start protecting.');
     console.log('----------------------------');
 
-    pubsub.subscribe('shield-status', (message) => {
-        console.log('look at me!');
-        console.log(message);
-    });
+    subscribeToShieldStatus();
+}
 
-    setInterval(() => {
+async function subscribeToShieldStatus() {
+    console.log('Subscribed to Shield Status');
+    await pubsub.subscribe('shield-status', (message) => {
+        console.log('Shield Status subscription: ' + message);
         checkShieldStatus();
-    }, 1000);
+    });
+}
+
+async function unsubscribeToShieldStatus() {
+    await pubsub.unsubscribe('shield-status').then(() => {
+        console.log('Unsubscribed from Shield Status');
+    });
 }
 
 async function checkShieldStatus() {
@@ -85,8 +92,10 @@ async function checkShieldStatus() {
 
 async function deactivate() {
     try {
+        await unsubscribeToShieldStatus();
         let isDeactivated = await subscriber.set("shield_status", "deactivated");
         let cancelNextAction = await subscriber.set("set-next-action", "none");
+        await subscribeToShieldStatus();
         
         await connection.removeAccountChangeListener(accountChangeListenerID).then( function () {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
@@ -128,9 +137,10 @@ async function activate() {
             'confirmed',
         );
 
-        await pubsub.unsubscribe('shield-status');
+        await unsubscribeToShieldStatus();
         await subscriber.set('shield_status', 'activated');
         await subscriber.set('set-next-action', 'none');
+        await subscribeToShieldStatus();
         //socket.emit('log', 'Shield Activated.');
         twilio.sendSMS('Solana Shield activated.');
 
