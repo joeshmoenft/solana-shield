@@ -6,6 +6,7 @@
   "author": "@rhh4x0r",
   "license": "MIT",
   "dependencies": {
+    "@socket.io/redis-adapter": "^7.1.0",
     "@solana/web3.js": "^1.39.1",
     "bs58": "^5.0.0",
     "connect-wwwhisper": "*",

@@ -34,6 +34,7 @@ const io = new Server(server);
 
 var logs = [];
 
+
 io.on('connection', (socket) => {
 
     socket.on('log', (arg) => {
@@ -46,8 +47,6 @@ io.on('connection', (socket) => {
     io.emit('log', 'Server online.');
 });
 
-console.log('Server port:');
-console.log(PORT);
 
 server.listen(PORT, () => {
     console.log('Server started...listening on %d', PORT);
