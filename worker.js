@@ -11,10 +11,10 @@ const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
 //var socket = io.connect('http://localhost:5100');
-var port = 'http://localhost:80';
+var port = process.env.PORT;
 console.log('PORT:');
 console.log(port);
-var socket = require('socket.io-client')('http://localhost:80');
+var socket = require('socket.io-client')('http://localhost:' + process.env.PORT);
 socket.on('connect', function(){ 
     console.log('Worker connected to socket.');
 });
@@ -119,7 +119,7 @@ async function activate() {
         await subscriber.set('set-next-action', 'none');
         socket.emit('log', 'Shield Activated.');
         twilio.sendSMS('Solana Shield activated.');
-        
+
     } catch (err) {
         await subscriber.set("shield_status", "disactivated");
         console.log('Could not activate shield for some reason.');

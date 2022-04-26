@@ -14,7 +14,7 @@ const twilio = require('./twilio')
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
 // Serve on PORT on Heroku and on localhost:5000 locally
-let PORT = '80';
+let PORT = process.env.PORT;
 const client = redis.createClient({url: process.env.REDIS_URL});
 client.connect();
 
