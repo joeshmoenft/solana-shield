@@ -16,7 +16,15 @@ let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 // Serve on PORT on Heroku and on localhost:5000 locally
 let PORT = process.env.PORT;
 const client = redis.createClient({url: process.env.REDIS_URL});
+const sub = client.duplicate();
+
 client.connect();
+sub.connect();
+
+sub.subscribe('shield-status', (message) => {
+    console.log('shield status sub');
+    console.log(message);
+});
 
 let app = express();
 
