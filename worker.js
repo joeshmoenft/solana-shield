@@ -8,7 +8,7 @@ const redis = require('redis');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
-const pubsub = subscriber.duplicate();
+const pubsub = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 pubsub.connect();
 
