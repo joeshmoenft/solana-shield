@@ -46,11 +46,6 @@ let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 let currentStatus = "deactivated";
 let accountChangeListenerID;
 
-pubsub.subscribe('shield-status', (message) => {
-    console.log('look at me!');
-    console.log(message);
-});
-
 start();
 
 async function start() {
@@ -67,6 +62,11 @@ async function start() {
     console.log('----------------------------');
     console.log('Solana Shield Initialized...Activate to start protecting.');
     console.log('----------------------------');
+
+    pubsub.subscribe('shield-status', (message) => {
+        console.log('look at me!');
+        console.log(message);
+    });
 
     setInterval(() => {
         checkShieldStatus();
@@ -128,6 +128,7 @@ async function activate() {
             'confirmed',
         );
 
+        await pubsub.unsubscribe('shield-status');
         await subscriber.set('shield_status', 'activated');
         await subscriber.set('set-next-action', 'none');
         //socket.emit('log', 'Shield Activated.');

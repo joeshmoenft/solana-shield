@@ -19,12 +19,7 @@ const client = redis.createClient({url: process.env.REDIS_URL});
 const sub = client.duplicate();
 
 client.connect();
-sub.connect();
 
-sub.subscribe('shield-status', (message) => {
-    console.log('shield status sub');
-    console.log(message);
-});
 
 let app = express();
 
