@@ -8,9 +8,13 @@ const redis = require('redis');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
+const pubsub = subscriber.duplicate();
 subscriber.connect();
+pubsub.connect();
+
 
 //var socket = io.connect('http://localhost:5100');
+
 /** 
 var port = process.env.PORT;
 console.log('PORT:');
@@ -21,8 +25,8 @@ socket.on('connect', function(){
 });
 socket.on('event', function(data){});
 socket.on('disconnect', function(){});
-
 */
+
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
 }
@@ -42,11 +46,19 @@ let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 let currentStatus = "deactivated";
 let accountChangeListenerID;
 
+pubsub.subscribe('shield-status', (message) => {
+    console.log('look at me!');
+    console.log(message);
+});
+
+
 start();
 
 async function start() {
     await subscriber.set('shield_status', 'deactivated');
     await subscriber.set('set-next-action', 'none');
+
+  
 
     twilio.sendSMS('Solana Shield Worker started. If you arent just setting this up, look into this.');
     console.log('Solana Shield Booting Up....');

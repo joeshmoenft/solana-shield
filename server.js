@@ -33,8 +33,6 @@ const { resolve } = require('path');
 const io = new Server(server);
 
 var logs = [];
-
-
 io.on('connection', (socket) => {
 
     socket.on('log', (arg) => {
