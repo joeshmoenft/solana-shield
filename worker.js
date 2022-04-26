@@ -11,7 +11,7 @@ const subscriber = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 
 //var socket = io.connect('http://localhost:5100');
-var port = '28887';
+var port = process.env.PORT;
 console.log('PORT:');
 console.log(port);
 var socket = require('socket.io-client')('http://localhost:' + port);
