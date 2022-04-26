@@ -194,11 +194,12 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
     } catch(err) {
-        console.log('Cannot transfer funds, probably not enough SOL. Trying to shield a lower amount.');
-        if (attempt > 3) {
+        console.log('Cannot transfer funds, probably not enough SOL. Trying to shield again.');
+        if (attempt > 5) {
             shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
-        } else if (attempt > 10) {
-            console.log('Could not shield.');
+        } else if (attempt > 50) {
+            console.log(err);
+            console.log('Could not shield. Maybe high network congestion.');
             twilio.sendSMS('Could not shield transaction. Check your server logs and SOL wallet immediately.');  
         } else {
             shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
