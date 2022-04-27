@@ -14,7 +14,7 @@ class ShieldStatus extends React.Component {
     this.getShieldStatus();
     //isn't very  efficient. perhaps try pubsub again for this
     //but keep it refreeshing every 30 minutes in case they leave their comp
-    this.interval = setInterval(() => this.getShieldStatus(), 1800);
+    this.interval = setInterval(() => this.getShieldStatus(), 18000);
   }
 
   componentWillUnmount() {
