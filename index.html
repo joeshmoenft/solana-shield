@@ -40,7 +40,9 @@
   </div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-   var socket = io();
+   var socket = io('localhost:5100', {
+     withCredentials: true
+   });
 
    var logs = document.getElementById('shield-logs');
 
@@ -57,6 +59,16 @@
     logs.scrollTop = logs.scrollHeight;
     window.scrollTo(0, document.body.scrollHeight);
   });
+
+  var HOST = location.origin.replace(/^http/, 'ws');
+  var ws = new WebSocket(HOST);
+  var el;
+
+  ws.onmessage = function (event) {
+    var i2 = document.createElement('p');
+    i2.textContent = event.data;
+    logs.appendChild(event.data);
+  }
 
  </script>
 </body>

@@ -39,7 +39,7 @@ let accountChangeListenerID;
 
 let socket;
 
-var port = subscriber.get('server-port');
+var port = process.env.port || '5100';
 console.log('Socket Port to connect to:');
 console.log(port);
 socket = require('socket.io-client')('http://localhost:' + port);

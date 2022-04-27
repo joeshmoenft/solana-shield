@@ -14,7 +14,7 @@ const twilio = require('./twilio')
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
 // Serve on PORT on Heroku and on localhost:5000 locally
-let PORT = process.env.PORT;
+let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
 const sub = client.duplicate();
 
@@ -27,31 +27,6 @@ let app = express();
 if (process.env.AUTH_ENABLED == 'true') {
     app.use(wwwhisper());
 }
-
-// Open Socket
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const { resolve } = require('path');
-const io = new Server(server);
-
-var logs = [];
-io.on('connection', (socket) => {
-
-    socket.on('log', (arg) => {
-        console.log('Received log event from client.');
-        console.log(arg);
-        socket.broadcast.emit('log', arg);
-        logs.push(arg);
-    });
-    //connected
-    io.emit('log', 'Server online.');
-});
-
-
-server.listen(PORT, () => {
-    console.log('Server started...listening on %d', PORT);
-});
 
 client.set('server-port', PORT);
 // Serve the two static assets
@@ -84,7 +59,7 @@ app.get('/total', async (req, res) => {
 
 app.post('/activate', async (req, res) => {
     console.log('Activating Shield...');
-    io.emit('log', 'Activating Shield...');
+    log('log', 'Activating Shield...');
 
         try {
              await client.set('set-next-action', 'activate');
@@ -99,7 +74,7 @@ app.post('/activate', async (req, res) => {
 
 app.post('/deactivate', async (req, res) => {
     console.log('Deactivating Shield...');
-    io.emit('log', 'Deactivating Shield...');
+    log('log', 'Deactivating Shield...');
         try {
             await client.set('set-next-action', 'deactivate');
             await client.publish('shield-status', 'changed');
@@ -115,7 +90,11 @@ client.set('set-next-action', 'nothing');
 
 function log(socket, data) {
     console.log(data);
-    socket.emit('log', data);
+   // socket.emit('log', data);
 }
 
 twilio.sendSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');
+
+app.listen(PORT, () => {
+    console.log('Server started...listening on %d', PORT);
+});
