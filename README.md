@@ -78,9 +78,11 @@ We integrate with the app 'Pushover', which is a iOS/Android app you can downloa
 
 To set this up, visit https://pushover.net/, setup an account and download the app. Then, in your Config Vars on Heroku, set the following variables: 
 
-`PUSH_NOTIFICATIONS`=`true`
-`PUSHOVER_TOKEN`=`apcs6pf8eovg7288frgs4dkeuz2wt4`
-`PUSHOVER_USERKEY`=`(your User Key here)`
+`PUSH_NOTIFICATIONS`= true
+
+`PUSHOVER_TOKEN`= apcs6pf8eovg7288frgs4dkeuz2wt4
+
+`PUSHOVER_USERKEY`= (your User Key here)
 
 PUSHOVER_TOKEN is a public server that we setup to make this process easier, however ease of mind, you are more than welcome to setup your own application and change `PUSHOVER_TOKEN` with your application secret.
 
