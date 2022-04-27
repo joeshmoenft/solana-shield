@@ -25,6 +25,16 @@
        background-color: rgb(21, 21, 21);
      }
 
+     #sub-header {
+      background-color: rgb(21, 21, 21);
+      margin-top: 10px;
+      padding: 10px;
+     }
+
+     #sub-header a {
+       color: white;
+     }
+
       .glow-on-hover {
         margin-top: 20px;
       width: 220px;
@@ -32,7 +42,7 @@
       border: none;
       outline: none;
       color: #fff;
-      background: #111;
+      background-color: rgb(41, 41, 41);
       cursor: pointer;
       position: relative;
       z-index: 0;
@@ -57,7 +67,7 @@
   }
 
   .glow-on-hover:active {
-      color: #000
+      color: #000;
   }
 
   .glow-on-hover:active:after {
@@ -74,7 +84,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: #111;
+      background: rgb(41, 41, 41);
       left: 0;
       top: 0;
       border-radius: 10px;
@@ -99,6 +109,7 @@
     <div class='br2 flex flex-column items-center pv3'>
       <img src="logo-medium.png" width="200" height="200" />
       <div class='f1 mt2 mb1'>Solana Shield</div>
+      <div id="sub-header">Powered by <a href="https://twitter.com/JoeShmoeNFT">@JoeShmoeNFT</a></div>
       <div id="total-shielded"></div>
       <div id="shield_status_container"></div>
     </div>
