@@ -1,11 +1,11 @@
 # Solana Shield
 
-developed by [@rhh4x0r](https://twitter.com/rhh4x0r) for [@JoeShmoeNFT](https://twitter.com/joeshmoenft)
-
 ![](https://github.com/joeshmoenft/solana-shield/blob/main/logo-medium.png)
 
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/solanashield)
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/joeshmoenft)
+
+collab by [@rhh4x0r](https://twitter.com/rhh4x0r) and [@0x_fxnction](https://twitter.com/0x_fxnction) for [@JoeShmoeNFT](https://twitter.com/joeshmoenft)
 
 ---
 
