@@ -95,7 +95,9 @@ If you'd also like to receive SMS messages instead of Push Notifications, you ma
 `TWILIO_FROM_NUMBER`=
 `SMS_NOTIFICATIONS`=true
 
+
 Note that this requires that you have Twilio credits to setup, which may cost money unless they give you some with a free trial. All of these variables can be found in your Twilio console.
+
 ---
 ## Papertrails Alerts
 
