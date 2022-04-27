@@ -92,9 +92,13 @@ PUSHOVER_TOKEN is a public server that we setup to make this process easier, how
 If you'd also like to receive SMS messages instead of Push Notifications, you may integrate your Twilio account by using the following variables:
 
 `TWILIO_ACCOUNT_SID`=
+
 `TWILIO_AUTH_TOKEN`=
+
 `TWILIO_TO_NUMBER`=
+
 `TWILIO_FROM_NUMBER`=
+
 `SMS_NOTIFICATIONS`=true
 
 
