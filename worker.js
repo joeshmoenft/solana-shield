@@ -3,7 +3,7 @@ const {Keypair} = require("@solana/web3.js")
 const fs = require('fs');
 const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
-const twilio = require ('./notifications.js');
+const twilio = require ('./src/includes/notifications.js');
 const redis = require('redis');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';

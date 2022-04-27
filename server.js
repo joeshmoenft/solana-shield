@@ -9,7 +9,7 @@ const redis = require('redis');
 const path = require('path');const { isInAmpMode } = require('next/amp');
   require('dotenv').config({ path:path.join(__dirname, '.env') });
 
-const twilio = require('./notifications');
+const twilio = require('./src/includes/notifications');
 
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
@@ -36,10 +36,9 @@ if (process.env.AUTH_ENABLED == 'true') {
 
 client.set('server-port', PORT);
 // Serve the two static assets
-app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
-app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
-app.get('/shield_status_indicator.js', (req, res) => res.sendFile('shield_status_indicator.js', { root: __dirname }));
-app.get('/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: __dirname }));
+app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, './src') }));
+app.get('/shield_status_indicator.js', (req, res) => res.sendFile('/shield_status_indicator.js', { root: path.join(__dirname, './src/includes') }));
+app.get('/src/img/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: path.join(__dirname, './src/img') }));
 app.get('/status', async (req, res) => {
     //console.log('Getting Shield Status...');
         try {
