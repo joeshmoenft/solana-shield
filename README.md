@@ -2,8 +2,8 @@
 
 ![](https://github.com/joeshmoenft/solana-shield/blob/main/logo-medium.png)
 
-![https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white](https://twitter.com/JoeShmoeNFT)
-![https://discord.gg/joeshmoenft](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/joeshmoenft)
+[![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/joeshmoenft)
 
 > Protect your SOL address by auto-transferring any Solana that enters your wallet.
 
