@@ -48,7 +48,6 @@ app.get('/', (req, res) => res.sendFile('index.html', { root: __dirname }));
 app.get('/client.js', (req, res) => res.sendFile('client.js', { root: __dirname }));
 app.get('/shield_status_indicator.js', (req, res) => res.sendFile('shield_status_indicator.js', { root: __dirname }));
 app.get('/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: __dirname }));
-app.get('/node_modules/socket.io/client-dist/socket.io.js', (req, res) => res.sendFile('node_modules/socket.io/client-dist/socket.io.js', { root: __dirname }));
 app.get('/status', async (req, res) => {
     //console.log('Getting Shield Status...');
         try {
