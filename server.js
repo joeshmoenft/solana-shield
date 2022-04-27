@@ -9,7 +9,7 @@ const redis = require('redis');
 const path = require('path');const { isInAmpMode } = require('next/amp');
   require('dotenv').config({ path:path.join(__dirname, '.env') });
 
-const twilio = require('./twilio')
+const twilio = require('./twilio');
 
 let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 
@@ -18,8 +18,6 @@ let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
 
 client.connect();
-
-
 let app = express();
 
 if (process.env.AUTH_ENABLED == 'true') {
@@ -90,7 +88,7 @@ function log(socket, data) {
    // socket.emit('log', data);
 }
 
-twilio.sendsSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');
+twilio.sendSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');
 
 app.listen(PORT, () => {
     console.log('Server started...listening on %d', PORT);
