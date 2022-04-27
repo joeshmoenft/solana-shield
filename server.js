@@ -29,8 +29,8 @@ const wss = new WebSocket.Server({ server:server });
 
 wss.on('connection', function connection(ws) {
     console.log('web: a new client connected');
-    ws.send('from web: Welcome new client!');
-    ws.on('message', function incoming(message) {
+    ws.send('log', 'test log');
+    ws.on('log', function incoming(message) {
         console.log('web: received: %s', message);
         ws.send('from web: got your message dawg: ' + message);
     });

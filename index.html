@@ -46,8 +46,9 @@
     console.log('Connected to WS Server');
   });
 
-  socket.addEventListener('message', function(event) {
-    console.log('Message from server: ', event.data);
+  //add to show log
+  socket.addEventListener('log', function(event) {
+    console.log('Log from server: ', event.data);
   });
 
  </script>
