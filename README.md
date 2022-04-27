@@ -1,9 +1,13 @@
 # Solana Shield
 
+developed by [@rhh4x0r](https://twitter.com/rhh4x0r) for [@JoeShmoeNFT](https://twitter.com/joeshmoenft)
+
 ![](https://github.com/joeshmoenft/solana-shield/blob/main/logo-medium.png)
 
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/joeshmoenft)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/solanashield)
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/joeshmoenft)
+
+---
 
 > Protect your SOL address by auto-transferring any Solana that enters your wallet.
 
@@ -14,6 +18,7 @@
 Hi there, welcome to Solana Shield. Solana Shield is an application that automatically 
 transfers out any Solana in your wallet to a Recovery Address of your choice. Essentially, this acts as a 2-factor-authentication lock for a Solana wallet of your choice.
 
+---
 ## Use Cases:
 * Auto-transfer SOL from a compromised or old secondary sales treasury wallet to a new, safer cold wallet
 * Auto-transfer SOL from sold NFTs in your hot wallet to keep your SOL safe and deter hackers from being interested in your account
@@ -28,6 +33,7 @@ Security Considerations:
 
 * This is not intended for cold wallets and your 'safe' wallet. It's meant for the ones you're connecting to other sites and logging into Phantom apps with. Please get a Ledger and store your assets there, with seed keys stored offline.
 
+---
 ## Here's how it works:
 
 You setup your own Solana Shield on a hosting server of your choice. We have provided an easy deployment method through Heroku that you can use below that automagically spins everything up for you (using the button below), or you can download the source and deploy via your own method. 
@@ -44,13 +50,14 @@ Once you launch your server, you will need to configure the environment variable
 
 `AUTH_ENABLED`: **HIGHLY Recommended** you set this to `true` so that someone can't enable/disable your shield with your app URL from Heroku. If you don't do this your Shield will be vulnerable. Only use for testing.
 
+---
 ## Requirements
 * Private Key for the Solana account to Shield.
 * Public Address for the Solana account you wish to send funds to (your Recovery Address)
 * $14/month to pay for a Heroku server to host the application (Free server untested)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
-
+---
 ## Setup Instructions
 1. Setup a Heroku account at https://www.Heroku.com
 2. Put in Billing Information to verify your account. This is a necessity as the program requires a server load beyond the Free Plan. If you do not do this your setup will fail. The cost is between $0-14/month.
@@ -62,7 +69,7 @@ Once you launch your server, you will need to configure the environment variable
 6. If you have notifications enabled, you will receive SMS/Push Notifications when the Shield is Activated, Deactivated, or SOL is Shielded. See below for enabling them.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
-
+---
 ## Pushover Notifications
 
 Solana Shield has an integrated ability to send Push Notifications to your phone for key tasks: when the server starts, when your shield is Activated/Deactivated, when SOL was shielded in your wallet, etc.
@@ -76,7 +83,7 @@ To set this up, visit https://pushover.net/, setup an account and download the a
 `PUSHOVER_USERKEY`=`(your User Key here)`
 
 `PUSHOVER_TOKEN` is a public server that we setup to make this process easier, however ease of mind, you are more than welcome to setup your own application and change `PUSHOVER_TOKEN` with your application secret.
-
+---
 ## Twilio Notifications
 
 If you'd also like to receive SMS messages instead of Push Notifications, you may integrate your Twilio account by using the following variables:
@@ -88,7 +95,7 @@ If you'd also like to receive SMS messages instead of Push Notifications, you ma
 `SMS_NOTIFICATIONS`=true
 
 Note that this requires that you have Twilio credits to setup, which may cost money unless they give you some with a free trial. All of these variables can be found in your Twilio console.
-
+---
 ## Papertrails Alerts
 
 Papertrail is a logging software that's automatically attached to Solana Shield that allows you to view logs of the server and send notifications when your server goes down.
@@ -110,3 +117,9 @@ Query: up to down
 ```
 
 See this how-to for more info: https://www.papertrail.com/help/alerts/
+
+## Questions / Support
+
+Solana Shield is provided as-is to the community. If you would like support / help setting this up, buy yourself Joe NFT on Magic Eden [here](https://magiceden.io/marketplace/joe_shmoes_notsoaverage_club) and join our [verified-only Discord channels](https://discord.gg/joeshmoenft).
+
+For all other inquiries (partnerships, etc) please DM [@0x_fxnction](https://twitter.com/0x_fxnction) on Twitter.
