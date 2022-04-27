@@ -82,7 +82,8 @@ To set this up, visit https://pushover.net/, setup an account and download the a
 `PUSHOVER_TOKEN`=`apcs6pf8eovg7288frgs4dkeuz2wt4`
 `PUSHOVER_USERKEY`=`(your User Key here)`
 
-`PUSHOVER_TOKEN` is a public server that we setup to make this process easier, however ease of mind, you are more than welcome to setup your own application and change `PUSHOVER_TOKEN` with your application secret.
+PUSHOVER_TOKEN is a public server that we setup to make this process easier, however ease of mind, you are more than welcome to setup your own application and change `PUSHOVER_TOKEN` with your application secret.
+
 ---
 ## Twilio Notifications
 
