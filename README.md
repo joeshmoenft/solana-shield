@@ -13,7 +13,7 @@ collab by [@rhh4x0r](https://twitter.com/rhh4x0r) and [@0x_fxnction](https://twi
 
 ** USE AT YOUR OWN RISK. THIS IS AN 'ALPHA' TECHNOLOGY AND MAY BE PRONE TO ERRORS, CRASHES, and SECURITY RISKS. **
 
-> If you are a security auditor and find bugs or vulnerabilties, please message RHH on Twitter at @rhh4x0r or submit a Github issue.
+> If you are a security auditor and find bugs or vulnerabilties, please message RHH on Twitter at @rhh4x0r.
 
 Hi there, welcome to Solana Shield. Solana Shield is an application that automatically 
 transfers out any Solana in your wallet to a Recovery Address of your choice. Essentially, this acts as a 2-factor-authentication lock for a Solana wallet of your choice.
