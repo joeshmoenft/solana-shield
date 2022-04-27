@@ -16,7 +16,6 @@ let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 // Serve on PORT on Heroku and on localhost:5000 locally
 let PORT = process.env.PORT || '5000';
 const client = redis.createClient({url: process.env.REDIS_URL});
-const sub = client.duplicate();
 
 client.connect();
 
@@ -91,7 +90,7 @@ function log(socket, data) {
    // socket.emit('log', data);
 }
 
-twilio.sendSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');
+twilio.sendsSMS('Solana Shield Web Server started. If you arent just setting this up, look into it.');
 
 app.listen(PORT, () => {
     console.log('Server started...listening on %d', PORT);
