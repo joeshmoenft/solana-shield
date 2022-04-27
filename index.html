@@ -38,10 +38,9 @@
     <div id="shield-status" class="w-80 f3"></div>
     <div id="shield-logs"></div>
   </div>
-  <script src="/socket.io/socket.io.js"></script>
   <script>
-  
-  const socket = new WebSocket('ws://localhost:5100');
+  var HOST = location.origin.replace(/^http/, 'ws');
+  const socket = new WebSocket(HOST);
 
   socket.addEventListener('open', function(event) {
     console.log('Connected to WS Server');
