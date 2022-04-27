@@ -96,10 +96,14 @@ You can set alerts to e-mail or Pushover.
 
 To setup alerts, visit your Papertrail account and setup the following alerts to your E-mail or Pushover account:
 
-`Name: App Crash`
-`Query: H10`
+```
+Name: App Crash
+Query: H10
+```
 
-`Name: Dyno Down`
-`Query: up to down`
+```
+Name: Dyno Down
+Query: up to down
+```
 
 See this how-to for more info: https://www.papertrail.com/help/alerts/
