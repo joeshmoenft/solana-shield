@@ -3,7 +3,7 @@ const {Keypair} = require("@solana/web3.js")
 const fs = require('fs');
 const bs58 = require('bs58');
 const path = require('path');  require('dotenv').config({ path:path.join(__dirname, '.env') });
-const twilio = require ('./twilio.js');
+const twilio = require ('./notifications.js');
 const redis = require('redis');
 
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -63,7 +63,7 @@ async function start() {
 
   
 
-    twilio.sendSMS('Solana Shield Worker started. If you arent just setting this up, look into this.');
+    twilio.sendNotification('Solana Shield Worker started. If you arent just setting this up, look into this.');
     console.log('Solana Shield Booting Up....');
     console.log('----------------------------');
     console.log('Protect account: %s', shieldedAccount.publicKey);
@@ -110,7 +110,7 @@ async function deactivate() {
             console.log('xxxx SHIELD DEACTIVATED xxxx');
             currentStatus = "deactivated";
             log('log', 'Shield Deactivated.');
-            twilio.sendSMS('Solana Shield Deactivated.');
+            twilio.sendNotification('Solana Shield Deactivated.');
         });
 
     } catch (err) {
@@ -151,7 +151,7 @@ async function activate() {
         await subscriber.set('set-next-action', 'none');
         await subscribeToShieldStatus();
         log('log', 'Shield Activated.');
-        twilio.sendSMS('Solana Shield activated.');
+        twilio.sendNotification('Solana Shield activated.');
 
     } catch (err) {
         await subscriber.set("shield_status", "disactivated");
@@ -197,8 +197,8 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Transaction ID: %s', result);
         console.log('SOL balance is now 0. Suck it hackers.');
         log('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
-        twilio.sendSMS('Solana Shield protected ' + amount / 1000000000 + ' SOL');
-        twilio.sendSMS('https://solscan.io/tx/' + result);
+        twilio.sendNotification('Solana Shield protected ' + amount / 1000000000 + ' SOL');
+        twilio.sendNotification('https://solscan.io/tx/' + result);
 
         addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
@@ -209,7 +209,7 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         } else if (attempt > 50) {
             console.log(err);
             console.log('Could not shield. Maybe high network congestion.');
-            twilio.sendSMS('Could not shield transaction. Check your server logs and SOL wallet immediately.');  
+            twilio.sendNotification('Could not shield transaction. Check your server logs and SOL wallet immediately.');  
         } else {
             shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
         }
