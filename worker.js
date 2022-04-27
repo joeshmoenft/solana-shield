@@ -12,6 +12,16 @@ const pubsub = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
 pubsub.connect();
 
+subscriber.on('error', (err) => {
+    console.log('Subscriber REDIS client could not connect');
+    console.log(err);
+});
+
+pubsub.on('error', (err) => {
+    console.log('Pubsub REDIS client could not connect');
+    console.log(err);
+});
+
 
 //var socket = io.connect('http://localhost:5100');
 
