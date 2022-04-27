@@ -1,101 +1,80 @@
-
 let express = require('express');
-const solanaWeb3 = require('@solana/web3.js');
-const {Keypair} = require("@solana/web3.js")
-const bs58 = require('bs58');
 const wwwhisper = require('connect-wwwhisper');
-const festch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const redis = require('redis');
-const path = require('path');const { isInAmpMode } = require('next/amp');
-  require('dotenv').config({ path:path.join(__dirname, '.env') });
-
+const path = require('path');
 const twilio = require('./src/includes/notifications');
-
-let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
-
-// Serve on PORT on Heroku and on localhost:5000 locally
-let PORT = process.env.PORT || '5000';
-const client = redis.createClient({url: process.env.REDIS_URL});
-
-client.connect();
-
-client.on('error', (err) => {
-    console.log('REDIS client could not connect');
-    console.log(err);
-});
-
-client.on('connect', () => {
-    console.log('Redis client connected.');
-});
+require('dotenv').config({path: path.join(__dirname, '.env')});
 
 let app = express();
 
+
+let PORT = process.env.PORT || '5000';
+let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
 if (process.env.AUTH_ENABLED == 'true') {
     app.use(wwwhisper());
 }
 
+
+const client = redis.createClient({url: REDIS_URL});
+client.connect();
 client.set('server-port', PORT);
-// Serve the two static assets
-app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, './src') }));
-app.get('/shield_status_indicator.js', (req, res) => res.sendFile('/shield_status_indicator.js', { root: path.join(__dirname, './src/includes') }));
-app.get('/src/img/logo-medium.png', (req, res) => res.sendFile('logo-medium.png', { root: path.join(__dirname, './src/img') }));
-app.get('/status', async (req, res) => {
-    //console.log('Getting Shield Status...');
-        try {
-            let shield_status = await client.get('shield_status');
-            //console.log(shield_status);
-            return res.send(shield_status);
-        } catch (err) {
-            console.log(err);
-        }
+client.on('error', (err) => {
+    console.log('REDIS client could not connect');
+    console.log(err);
+});
+client.on('connect', () => {
+    console.log('Redis client connected.');
 });
 
-app.get('/total', async (req, res) => {
 
-        try {
-            let totalShielded = await client.get('totalShielded');
-            return res.send(totalShielded);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
+app.get('/', (_, res) => res.sendFile('index.html', {root: path.join(__dirname, './src')}));
+app.get('/shield_status_indicator.js', (_, res) => res.sendFile('/shield_status_indicator.js', {root: path.join(__dirname, './src/includes')}));
+app.get('/src/img/logo-medium.png', (_, res) => res.sendFile('logo-medium.png', {root: path.join(__dirname, './src/img')}));
+app.get('/status', async (_, res) => {
+    try {
+        let shield_status = await client.get('shield_status');
+        return res.send(shield_status);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
-app.post('/activate', async (req, res) => {
+app.get('/total', async (_, res) => {
+    try {
+        let totalShielded = await client.get('totalShielded');
+        return res.send(totalShielded);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+});
+
+app.post('/activate', async (_, res) => {
     console.log('Activating Shield...');
-    log('log', 'Activating Shield...');
 
-        try {
-             await client.set('set-next-action', 'activate');
-             await client.publish('shield-status', 'changed');
-             res.sendStatus(200);
-            //await client.set('shield_status', 'activated');
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
+    try {
+        await client.set('set-next-action', 'activate');
+        await client.publish('shield-status', 'changed');
+        res.sendStatus(200);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
 });
 
-app.post('/deactivate', async (req, res) => {
+app.post('/deactivate', async (_, res) => {
     console.log('Deactivating Shield...');
-    log('log', 'Deactivating Shield...');
-        try {
-            await client.set('set-next-action', 'deactivate');
-            await client.publish('shield-status', 'changed');
-            //await client.set('shield_status', 'deactivated');
-            res.sendStatus(200);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
+    try {
+        await client.set('set-next-action', 'deactivate');
+        await client.publish('shield-status', 'changed');
+        res.sendStatus(200);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
 });
 
 client.set('set-next-action', 'nothing');
-
-function log(socket, data) {
-    console.log(data);
-   // socket.emit('log', data);
-}
 
 twilio.sendNotification('Solana Shield Web Server started. If you arent just setting this up, look into it.');
 
