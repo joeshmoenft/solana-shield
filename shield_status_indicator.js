@@ -118,7 +118,13 @@ class ShieldStatus extends React.Component {
             {className: "glow-on-hover disabled"},
             'Disconnected. Please restart the server and refresh.'
           );
-        } 
+        } else {
+            return e('button',
+          { onClick: () => this.enableShield(),
+            className: "glow-on-hover"},
+          'Activate'
+          );
+        }
       else {
           return this.state.status.toString();
       }
