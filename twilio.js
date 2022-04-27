@@ -7,9 +7,11 @@ var smsIsActivated = process.env.SMS_NOTIFICATIONS || false;
 
 const twilio = require('twilio')(twilioSid, twilioAuthToken, {});
 
+console.log('SMS Notifications Activated: ' + smsIsActivated);
+
 async function sendSMS(text) {
-    console.log('SMS Notifications Activated: ' + smsIsActivated);
-    if (smsIsActivated == "true") {
+    
+    if (smsIsActivated == true) {
         try {
             twilio.messages
             .create({body: text, from: twilioFromNumber, to: twilioToNumber})
@@ -18,7 +20,7 @@ async function sendSMS(text) {
             console.log('Could not send SMS: ' + text);
             console.log(err);
         }
-    }
+    } 
 }
 
 module.exports = { sendSMS };
