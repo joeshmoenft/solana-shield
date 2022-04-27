@@ -125,9 +125,6 @@ class ShieldStatus extends React.Component {
           'Activate'
           );
         }
-      else {
-          return this.state.status.toString();
-      }
   }
 
 }
