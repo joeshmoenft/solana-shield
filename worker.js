@@ -188,7 +188,7 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('SOL balance is now 0. Suck it hackers.');
         log('log', 'Shielded ' + amount / 1000000000 + 'SOL.');
         twilio.sendSMS('Solana Shield protected ' + amount / 1000000000 + ' SOL');
-        twilio.sendSMS('https://solscan.io/' + result);
+        twilio.sendSMS('https://solscan.io/tx/' + result);
 
         addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
