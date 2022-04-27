@@ -11,7 +11,7 @@ console.log('SMS Notifications Activated: ' + smsIsActivated);
 
 async function sendSMS(text) {
     
-    if (smsIsActivated == true) {
+    if (smsIsActivated == "true") {
         try {
             twilio.messages
             .create({body: text, from: twilioFromNumber, to: twilioToNumber})
