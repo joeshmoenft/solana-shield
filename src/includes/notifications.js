@@ -33,25 +33,25 @@ console.log('SMS Notifications: ' + smsIsActivated);
 console.log('Push Notifications: ' + pushoverIsActivated);
 
 async function sendNotification(text) {
-    
+
     if (smsIsActivated == "true") {
         try {
             twilio.messages
-            .create({body: text, from: twilioFromNumber, to: twilioToNumber})
-            .then(message => console.log('SMS Sent: ' + text));
+                .create({body: text, from: twilioFromNumber, to: twilioToNumber})
+                .then(message => console.log('SMS Sent: ' + text));
         } catch (err) {
             console.log('Could not send SMS: ' + text);
             console.log(err);
         }
-    } 
+    }
 
     if (pushoverIsActivated == "true") {
         try {
-            push.send("Solana Shield", text, function (err, res){
-                if(err) {
+            push.send("Solana Shield", text, function (err, res) {
+                if (err) {
                     console.log('Could not send push notification: ' + text);
                     return console.log(err);
-                } 
+                }
                 console.log('Push Notification sent: ' + text);
             });
         } catch (err) {
@@ -61,4 +61,4 @@ async function sendNotification(text) {
     }
 }
 
-module.exports = { sendNotification };
+module.exports = {sendNotification};
