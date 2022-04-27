@@ -40,35 +40,16 @@
   </div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-   var socket = io('localhost:5100', {
-     withCredentials: true
-   });
+  
+  const socket = new WebSocket('ws://localhost:5100');
 
-   var logs = document.getElementById('shield-logs');
-
-   socket.on('error', function(error) {
-     console.log('Socket connect error');
-     console.log(error);
-   });
-
-   socket.on('log', function(msg) {
-    var item = document.createElement('p');
-    //console.log(msg);
-    item.textContent = msg;
-    logs.appendChild(item);
-    logs.scrollTop = logs.scrollHeight;
-    window.scrollTo(0, document.body.scrollHeight);
+  socket.addEventListener('open', function(event) {
+    console.log('Connected to WS Server');
   });
 
-  var HOST = location.origin.replace(/^http/, 'ws');
-  var ws = new WebSocket(HOST);
-  var el;
-
-  ws.onmessage = function (event) {
-    var i2 = document.createElement('p');
-    i2.textContent = event.data;
-    logs.appendChild(event.data);
-  }
+  socket.addEventListener('message', function(event) {
+    console.log('Message from server: ', event.data);
+  });
 
  </script>
 </body>
