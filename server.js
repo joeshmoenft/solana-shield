@@ -9,7 +9,7 @@ let app = express();
 
 
 let PORT = process.env.PORT || '5000';
-let REDIS_URL = process.env.REDIS_URL | 'redis://127.0.0.1:6379';
+let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 if (process.env.AUTH_ENABLED == 'true') {
     app.use(wwwhisper());
 }
