@@ -5,6 +5,7 @@ const path = require('path'); require('dotenv').config({path: path.join(__dirnam
 const twilio = require('./src/includes/notifications.js');
 const redis = require('redis');
 
+console.log('Redis URL: ' + process.env.REDIS_URL);
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 const pubsub = redis.createClient({url: process.env.REDIS_URL});
 subscriber.connect();
