@@ -4,11 +4,15 @@ const bs58 = require('bs58');
 const path = require('path'); require('dotenv').config({path: path.join(__dirname, '.env')});
 const twilio = require('./src/includes/notifications.js');
 const redis = require('redis');
+const {promisify} = require('util');
 
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 const pubsub = redis.createClient({url: process.env.REDIS_URL});
-subscriber.connect();
-pubsub.connect();
+
+const subGetAsync = promisify(subscriber.get).bind(subscriber);
+const subSetAsync = promisify(subscriber.set).bind(subscriber);
+const pubsubSubscribeAsync = promisify(pubsub.subscribe).bind(pubsub);
+const pubsubUnsubscribeAsync = promisify(pubsub.unsubscribe).bind(pubsub);
 
 subscriber.on('error', (err) => {
     console.log('Subscriber REDIS client could not connect');
@@ -42,8 +46,8 @@ async function start() {
 
 
 
-    await subscriber.set('shield_status', 'deactivated');
-    await subscriber.set('set-next-action', 'none');
+    await subSetAsync('shield_status', 'deactivated');
+    await subSetAsync('set-next-action', 'none');
 
 
 
@@ -60,21 +64,32 @@ async function start() {
 }
 
 async function subscribeToShieldStatus() {
-    console.log('Subscribed to Shield Status');
-    await pubsub.subscribe('shield-status', (message) => {
-        console.log('Shield Status subscription: ' + message);
-        checkShieldStatus();
+
+    console.log('Trying to subscribe to Shield Status');
+
+    await pubsubSubscribeAsync('shield-status');
+
+    pubsub.on('subscribe', function(channel, message) {
+        console.log('Subscribed to Shield Status');
+    })
+
+    pubsub.on('message', function(channel, message) {
+        if (message == 'changed') {
+            console.log('Shield Status subscription: ' + message);
+            checkShieldStatus();
+        }
     });
 }
 
 async function unsubscribeToShieldStatus() {
-    await pubsub.unsubscribe('shield-status').then(() => {
+    await pubsubUnsubscribeAsync('shield-status').then(() => {
         console.log('Unsubscribed from Shield Status');
     });
 }
 
 async function checkShieldStatus() {
-    let nextAction = await subscriber.get("set-next-action");
+    let nextAction = await subGetAsync("set-next-action");
+    console.log('Next Action: ' + nextAction);
 
     if (nextAction !== currentStatus && nextAction === "activate") {
         activate();
@@ -85,10 +100,10 @@ async function checkShieldStatus() {
 
 async function deactivate() {
     try {
-        await unsubscribeToShieldStatus();
-        await subscriber.set("shield_status", "deactivated");
-        await subscriber.set("set-next-action", "none");
-        await subscribeToShieldStatus();
+        unsubscribeToShieldStatus();
+        await subSetAsync("shield_status", "deactivated");
+        await subSetAsync("set-next-action", "none");
+        subscribeToShieldStatus();
 
         await connection.removeAccountChangeListener(accountChangeListenerID).then(function () {
             currentStatus = "deactivated";
@@ -97,7 +112,7 @@ async function deactivate() {
         });
 
     } catch (err) {
-        await subscriber.set("shield_status", "activated");
+        subscriber.set("shield_status", "activated");
         console.log('Could not deactivate the shield for some reason.');
         console.log(err);
     }
@@ -128,15 +143,15 @@ async function activate() {
             'confirmed',
         );
 
-        await unsubscribeToShieldStatus();
-        await subscriber.set('shield_status', 'activated');
-        await subscriber.set('set-next-action', 'none');
-        await subscribeToShieldStatus();
+        unsubscribeToShieldStatus();
+        await subSetAsync('shield_status', 'activated');
+        await subSetAsync('set-next-action', 'none');
+        subscribeToShieldStatus();
         console.log('Shield Activated.');
         twilio.sendNotification('Solana Shield activated.');
 
     } catch (err) {
-        await subscriber.set("shield_status", "disactivated");
+        await subSetAsync("shield_status", "disactivated");
         console.log('Could not activate shield for some reason.');
         console.log(err);
     }
@@ -196,9 +211,9 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
 
 async function addTotalShielded(balance) {
     try {
-        let currentTotalShielded = await subscriber.get('totalShielded');
+        let currentTotalShielded = subscriber.get('totalShielded');
         currentTotalShielded += balance;
-        await subscriber.set('totalShielded', currentTotalShielded);
+        subSetAsync('totalShielded', currentTotalShielded);
     } catch (err) {
         console.log(err);
     }
