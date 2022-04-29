@@ -1,6 +1,7 @@
 let express = require('express');
 const wwwhisper = require('connect-wwwhisper');
 const redis = require('redis');
+const {promisify} = require('util');
 const path = require('path');
 const twilio = require('./src/includes/notifications');
 require('dotenv').config({path: path.join(__dirname, '.env')});
@@ -16,7 +17,11 @@ if (process.env.AUTH_ENABLED == 'true') {
 
 
 const client = redis.createClient({url: REDIS_URL});
-client.connect();
+
+const clientGetAsync = promisify(client.get).bind(client);
+const clientSetAsync = promisify(client.set).bind(client);
+const clientPublishAsync = promisify(client.publish).bind(client);
+
 client.set('server-port', PORT);
 client.on('error', (err) => {
     console.log('REDIS client could not connect');
@@ -32,7 +37,7 @@ app.get('/shield_status_indicator.js', (_, res) => res.sendFile('/shield_status_
 app.get('/src/img/logo-medium.png', (_, res) => res.sendFile('logo-medium.png', {root: path.join(__dirname, './src/img')}));
 app.get('/status', async (_, res) => {
     try {
-        let shield_status = await client.get('shield_status');
+        let shield_status = await clientGetAsync('shield_status');
         return res.send(shield_status);
     } catch (err) {
         console.log(err);
@@ -41,7 +46,7 @@ app.get('/status', async (_, res) => {
 
 app.get('/total', async (_, res) => {
     try {
-        let totalShielded = await client.get('totalShielded');
+        let totalShielded = await clientGetAsync('totalShielded');
         return res.send(totalShielded);
     } catch (err) {
         console.log(err);
@@ -53,8 +58,8 @@ app.post('/activate', async (_, res) => {
     console.log('Activating Shield...');
 
     try {
-        await client.set('set-next-action', 'activate');
-        await client.publish('shield-status', 'changed');
+        await clientSetAsync('set-next-action', 'activate');
+        await clientPublishAsync('shield-status', 'changed');
         res.sendStatus(200);
     } catch (err) {
         console.log(err);
@@ -65,8 +70,8 @@ app.post('/activate', async (_, res) => {
 app.post('/deactivate', async (_, res) => {
     console.log('Deactivating Shield...');
     try {
-        await client.set('set-next-action', 'deactivate');
-        await client.publish('shield-status', 'changed');
+        await clientSetAsync('set-next-action', 'deactivate');
+        await clientPublishAsync('shield-status', 'changed');
         res.sendStatus(200);
     } catch (err) {
         console.log(err);
