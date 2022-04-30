@@ -12,51 +12,63 @@
   "env": {
     "AUTH_ENABLED": {
       "description": "Solana network that you'd like to use.",
-      "value": "true"
+      "value": "true",
+      "required": true
     },
     "NETWORK": {
       "description": "Solana network that you'd like to use.",
-      "value": "mainnet-beta"
+      "value": "mainnet-beta",
+      "required": true
     },
     "SHIELDED_ACCOUNT_PRIVATE_KEY": {
       "description": "This is your SOL Wallet Private Key that you want to shield.",
-      "value": ""
+      "value": "",
+      "required": true
     },
     "RECOVERY_ACCOUNT_ADDRESS": {
       "description": "This is your SOL Wallet Public Key that you want to send funds to.",
-      "value": ""
+      "value": "",
+      "required": true
     },
     "PUSH_NOTIFICATIONS": {
       "description": "Do you want Push Notifs enabled? true for yes, false for no.",
-      "value": "false"
+      "value": "false",
+      "required": false
     },
     "PUSHOVER_TOKEN": {
       "description": "This is the Public Solana Shield Pushover token. You can change it to your own if you'd like.",
-      "value": "apcs6pf8eovg7288frgs4dkeuz2wt4"
+      "value": "apcs6pf8eovg7288frgs4dkeuz2wt4",
+      "required": false
     },
     "PUSHOVER_USERKEY": {
       "description": "Your Pushover user key.",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "SMS_NOTIFICATIONS": {
       "description": "Twilio SMS Notifications. true for yes, false for no.",
-      "value": "false"
+      "value": "false",
+      "required": false
     },
     "TWILIO_ACCOUNT_SID": {
       "description": "Your Twilio Account SID.",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "TWILIO_AUTH_TOKEN": {
       "description": "Your Twilio Account AUTH token.",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "TWILIO_TO_NUMBER": {
       "description": "The phone number you'd like to send SMS notifications to.",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "TWILIO_FROM_NUMBER": {
       "description": "Your Twilio account phone number",
-      "value": ""
+      "value": "",
+      "required": false
     }
   }
 }
