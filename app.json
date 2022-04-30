@@ -11,7 +11,7 @@
     ],
   "env": {
     "AUTH_ENABLED": {
-      "description": "Solana network that you'd like to use.",
+      "description": "Secure auth. Keep as true unless you know what you're doing.",
       "value": "true",
       "required": true
     },
