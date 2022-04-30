@@ -36,6 +36,7 @@ transfers out any Solana in your wallet to a Recovery Address of your choice. Es
 ---
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
+
 ## Setup Instructions
 1. Setup a Heroku account at https://www.Heroku.com. **Setup 2FA Immediately on both Heroku and the E-mali you used to signup**
 2. Put in Billing Information to verify your account. This is a necessity as the program requires a server load beyond the Free Plan. If you do not do this your setup will fail. The cost is between $0-14/month.
@@ -140,6 +141,7 @@ This was a point in time assessment and the Solana Shield team will continue to 
 
 ## Questions / Support
 
-Solana Shield is provided as-is to the community. If you would like support / help setting this up, buy yourself Joe NFT on Magic Eden [here](https://magiceden.io/marketplace/joe_shmoes_notsoaverage_club) and join our [verified-only Discord channels](https://discord.gg/joeshmoenft).
+Solana Shield is provided as-is to the community. If you would like support / help setting this up, buy yourself Joe NFT on Magic Eden [here](https://magiceden.io/marketplace/joe_shmoes_notsoaverage_club) and join our [Discord channel](https://discord.gg/joeshmoenft).
 
-For all other inquiries (partnerships, etc) please DM [@0x_fxnction](https://twitter.com/0x_fxnction) on Twitter.
+Partnership Inquiries: [@0x_fxnction](https://twitter.com/0x_fxnction)
+Dev Inquiries: [@rhh4x0r](https://twitter.com/rhh4x0r) 
