@@ -26,16 +26,18 @@ transfers out any Solana in your wallet to a Recovery Address of your choice. Es
 * Protect your staking assets by disallowing any SOL to enter your wallet, thus disabling the ability for a hacker to unstake and move any NFTs
 * Get a chance of recovering assets from a compromised wallet that still has assets in it (like royalties or NFTs)
 
-Security Considerations:
+## Security Considerations:
 * You are storing your private key in an encrypted variable online. With Heroku, this is known to be a very secure way to store these online. Many big applications use this for storing secret API keys and hasn't been hacked as far as we know. 
 
-* One way for the hacker to get your private key through this, though, would be to 1) know you're using Solana Shield,  2) get access to your e-mail, and 3) get access to your heroku login 2FA code (that you should setup on your account). This is a big deterrant, especially since it's a lot of effort to hack for a  wallet that has 0 SOL in it (which it would if you're running the shield).
+* One way for the hacker to get your private key, though, would be to 1) know you're using Solana Shield,  2) get access to your e-mail, and 3) get access to your heroku login 2FA code (that you should setup on your account). This is a big deterrant, especially since it's a lot of effort to hack for a  wallet that has 0 SOL in it (which it would if you're running the shield).
 
 * This is not intended for cold wallets and your 'safe' wallet. It's meant for the ones you're connecting to other sites and logging into Phantom apps with. Please get a Ledger and store your assets there, with seed keys stored offline.
 
 ---
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
 ## Setup Instructions
-1. Setup a Heroku account at https://www.Heroku.com
+1. Setup a Heroku account at https://www.Heroku.com. **Setup 2FA Immediately on both Heroku and the E-mali you used to signup**
 2. Put in Billing Information to verify your account. This is a necessity as the program requires a server load beyond the Free Plan. If you do not do this your setup will fail. The cost is between $0-14/month.
 3. Deploy the application to Heroku using the button in this document. 
 2. Set your config vars in `Settings > Config Vars`. (See below for the variables)
@@ -43,6 +45,8 @@ Security Considerations:
 4. Open the app, use the auth system to login. Your username is the account e-mail you set up for Heroku. It will send an e-mail with a magic link to access your Shield UI.
 5. Turn the Shield on or off by clicking `Activate` or `Deactivate`
 6. If you have notifications enabled, you will receive SMS/Push Notifications when the Shield is Activated, Deactivated, or SOL is Shielded. See below for enabling them.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
 
 ## Core Environment Variables
 
@@ -55,11 +59,7 @@ Security Considerations:
 `AUTH_ENABLED`: **HIGHLY Recommended** you set this to `true` so that someone can't enable/disable your shield with your app URL from Heroku. If you don't do this your Shield will be vulnerable. Only turn off for testing
 
 ---
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
----
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
----
 ## Pushover Notifications
 
 Solana Shield has an integrated ability to send Push Notifications to your phone for key tasks: when the server starts, when your shield is Activated/Deactivated, when SOL was shielded in your wallet, etc.
