@@ -121,14 +121,16 @@ async function deactivate() {
 
 async function activate() {
     try {
-        console.log('||||| Shield Activated |||||');
-        currentStatus = "activated";
+        console.log('||||| Shield Activating... |||||');
 
-        const balance = await connection.getBalance(shieldedAccount.publicKey);
-        console.log('Current balance: %s', balance);
-
+        const balance = await connection.getBalance(shieldedAccount.publicKey)
+            .then((result) => console.log('Current balance: %s', result))
+            .catch((error) => {
+                console.log('Error getting balance. Solana/API is probably down.');
+                console.log(error);
+            });
+        
         checkBalanceToProtect(balance);
-
 
         //When new transaction is detected, run this
         accountChangeListenerID = connection.onAccountChange(
@@ -149,6 +151,8 @@ async function activate() {
         subscribeToShieldStatus();
         console.log('Shield Activated.');
         twilio.sendNotification('Solana Shield activated.');
+
+        currentStatus = "activated";
 
     } catch (err) {
         await subSetAsync("shield_status", "disactivated");
