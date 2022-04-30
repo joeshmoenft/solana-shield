@@ -34,39 +34,29 @@ Security Considerations:
 * This is not intended for cold wallets and your 'safe' wallet. It's meant for the ones you're connecting to other sites and logging into Phantom apps with. Please get a Ledger and store your assets there, with seed keys stored offline.
 
 ---
-## Here's how it works:
-
-You setup your own Solana Shield on a hosting server of your choice. We have provided an easy deployment method through Heroku that you can use below that automagically spins everything up for you (using the button below), or you can download the source and deploy via your own method. 
-
-> If you choose to do so, you acknowledge that it is untested and probably will require source code modifications to make it work.
-
-Once you launch your server, you will need to configure the environment variables in Settings:
-
-`SHIELDED_ACCOUNT_PRIVATE_KEY`: Your private key to the account you want SOL to come out of. You can export this from Phantom in settings. Since we aren't running off a smart contract, the program needs this to detect and send SOL.
-
-`RECOVERY_ACCOUNT_ADDRESS` : The public address of the account you want the SOL sent to. You can copy this from Phantom as if you were to send this address to a friend.
-
-`NETWORK`: Either `mainnet-beta` for the Mainnet server or `devnet` if you'd like to test it on there.
-
-`AUTH_ENABLED`: **HIGHLY Recommended** you set this to `true` so that someone can't enable/disable your shield with your app URL from Heroku. If you don't do this your Shield will be vulnerable. Only use for testing.
-
----
-## Requirements
-* Private Key for the Solana account to Shield.
-* Public Address for the Solana account you wish to send funds to (your Recovery Address)
-* $14/month to pay for a Heroku server to host the application (Free server untested)
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
----
 ## Setup Instructions
 1. Setup a Heroku account at https://www.Heroku.com
 2. Put in Billing Information to verify your account. This is a necessity as the program requires a server load beyond the Free Plan. If you do not do this your setup will fail. The cost is between $0-14/month.
 3. Deploy the application to Heroku using the button in this document. 
-2. Set your config vars in `Settings > Config Vars`.
+2. Set your config vars in `Settings > Config Vars`. (See below for the variables)
 3. Make sure both `web` and `worker` Dynos are on, or restarted after you set the Config Vars.
 4. Open the app, use the auth system to login. Your username is the account e-mail you set up for Heroku. It will send an e-mail with a magic link to access your Shield UI.
 5. Turn the Shield on or off by clicking `Activate` or `Deactivate`
 6. If you have notifications enabled, you will receive SMS/Push Notifications when the Shield is Activated, Deactivated, or SOL is Shielded. See below for enabling them.
+
+## Core Environment Variables
+
+`SHIELDED_ACCOUNT_PRIVATE_KEY`: Your **private key** to the account you want SOL to come out of. You can export this from Phantom in settings. Since we aren't running off a smart contract, the program needs this to detect and send SOL.
+
+`RECOVERY_ACCOUNT_ADDRESS` : The **public address** of the account you want the SOL sent to. You can copy this from Phantom as if you were to send this address to a friend.
+
+`NETWORK`: Either `mainnet-beta` for the Mainnet server or `devnet` if you'd like to test it on there.
+
+`AUTH_ENABLED`: **HIGHLY Recommended** you set this to `true` so that someone can't enable/disable your shield with your app URL from Heroku. If you don't do this your Shield will be vulnerable. Only turn off for testing
+
+---
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
+---
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/joeshmoenft/solana-shield/tree/main)
 ---
@@ -126,6 +116,27 @@ Query: up to down
 ```
 
 See this how-to for more info: https://www.papertrail.com/help/alerts/
+
+## Audits
+
+Security testing of [Solana Shield](https://github.com/joeshmoenft/solana-shield/) was carried out during the week of April 25-29 2022 by a member of the [@JoeShmoeNFT](https://twitter.com/joeshmoenft) community with years of professional security experience. The following threats were prioritized during the assessment:
+
+- [Authentication failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/).
+  - Broken integration of [wwwhisper](https://github.com/wrr/wwwhisper).
+  - Enumeration of email addresses used by wwwhiper to authenticate.
+  - The replay of wwwhisper login tokens to gain unauthorized access to a Solana Shield instance.
+  - Lack of session token invalidation when logging out of Solana Shield.
+- [Broken access controls](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
+  - Vulnerabilities in the wwhisper integration that would allow an attacker use sessions tokens from a Solana shield instance that they control to compromise a different Solana Shield instance that they do **not** control (horizontal privilege escalation).
+- [Cryptographic failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)
+  - The disclosure or mismanagement of shield account private keys.
+  - Lack of encryption in transit (HTTPS) to the Solana Shield site instances.
+- [Cross-Site Request Forgery](https://owasp.org/www-community/attacks/csrf) vulnerabilities that would allow an attacker to coerce a target into performing actions on their Solana Shield instance, such as disabling it.
+- [Known vulnerabilities](https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/) in the infrastructure and software components used to implement Solana Shield.
+
+Any vulnerabilities found during this assessment period were addressed by the Solana Shield team.
+
+This was a point in time assessment and the Solana Shield team will continue to actively assess the security properties of the software as it is further developed.
 
 ## Questions / Support
 
