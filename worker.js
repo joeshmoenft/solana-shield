@@ -3,26 +3,31 @@ const {Keypair} = require("@solana/web3.js")
 const bs58 = require('bs58');
 const path = require('path'); require('dotenv').config({path: path.join(__dirname, '.env')});
 const twilio = require('./src/includes/notifications.js');
-const redis = require('redis');
 const {promisify} = require('util');
+const db = require('./src/includes/db.js');
+const createSubscriber = require('pg-listen');
 
-const subscriber = redis.createClient({url: process.env.REDIS_URL});
-const pubsub = redis.createClient({url: process.env.REDIS_URL});
-
-const subGetAsync = promisify(subscriber.get).bind(subscriber);
-const subSetAsync = promisify(subscriber.set).bind(subscriber);
-const pubsubSubscribeAsync = promisify(pubsub.subscribe).bind(pubsub);
-const pubsubUnsubscribeAsync = promisify(pubsub.unsubscribe).bind(pubsub);
-
-subscriber.on('error', (err) => {
-    console.log('Subscriber REDIS client could not connect');
-    console.log(err);
+const subscriber = createSubscriber({
+    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
 });
 
-pubsub.on('error', (err) => {
-    console.log('Pubsub REDIS client could not connect');
-    console.log(err);
+subscriber.notifications.on('shield_update', msg => {
+    if (msg == true && msg != currentStatus) {
+        //console.log('activate it');
+        activate();
+    } else if (msg == false && msg !== currentStatus) {
+        deactivate();
+    }
 });
+
+subscriber.events.on('error', (error) => {
+    console.log('Error: ', error);
+});
+
+subscriber.connect();
+subscriber.listenTo('shield_update');
+
+
 
 if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
@@ -38,17 +43,15 @@ let shieldedSecret = bs58.decode(process.env.SHIELDED_ACCOUNT_PRIVATE_KEY);
 let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 
-let currentStatus = "deactivated";
+let currentStatus;
 let accountChangeListenerID;
 
 
 async function start() {
 
-
-
-    await subSetAsync('shield_status', 'deactivated');
-    await subSetAsync('set-next-action', 'none');
-
+    await db.initDB().then ( (res, error) => {
+        checkShieldOnStartup();
+    });
 
 
     twilio.sendNotification('Solana Shield Worker started. If you arent just setting this up, look into this.');
@@ -60,59 +63,31 @@ async function start() {
     console.log('Solana Shield Initialized...Activate to start protecting.');
     console.log('----------------------------');
 
-    subscribeToShieldStatus();
 }
 
-async function subscribeToShieldStatus() {
 
-    console.log('Trying to subscribe to Shield Status');
+async function checkShieldOnStartup() {
 
-    await pubsubSubscribeAsync('shield-status');
-
-    pubsub.on('subscribe', function(channel, message) {
-        console.log('Subscribed to Shield Status');
-    })
-
-    pubsub.on('message', function(channel, message) {
-        if (message == 'changed') {
-            console.log('Shield Status subscription: ' + message);
-            checkShieldStatus();
-        }
+    await db.getShieldStatusDB().then( (res, err) => {
+        console.log('Startup Shield Status DB: ' + res);
+        currentStatus = res;
     });
-}
-
-async function unsubscribeToShieldStatus() {
-    await pubsubUnsubscribeAsync('shield-status').then(() => {
-        console.log('Unsubscribed from Shield Status');
-    });
-}
-
-async function checkShieldStatus() {
-    let nextAction = await subGetAsync("set-next-action");
-    console.log('Next Action: ' + nextAction);
-
-    if (nextAction !== currentStatus && nextAction === "activate") {
+    
+    if (currentStatus) {
         activate();
-    } else if (nextAction !== currentStatus && nextAction == "deactivate") {
-        deactivate();
     }
+
 }
 
 async function deactivate() {
     try {
-        unsubscribeToShieldStatus();
-        await subSetAsync("shield_status", "deactivated");
-        await subSetAsync("set-next-action", "none");
-        subscribeToShieldStatus();
-
         await connection.removeAccountChangeListener(accountChangeListenerID).then(function () {
-            currentStatus = "deactivated";
+            currentStatus = false;
+            db.updateShieldStatusDB(false);
             console.log('Shield Deactivated.');
             twilio.sendNotification('Solana Shield Deactivated.');
         });
-
     } catch (err) {
-        subscriber.set("shield_status", "activated");
         console.log('Could not deactivate the shield for some reason.');
         console.log(err);
     }
@@ -133,7 +108,7 @@ async function activate() {
         checkBalanceToProtect(balance);
 
         //When new transaction is detected, run this
-        accountChangeListenerID = connection.onAccountChange(
+        accountChangeListenerID = await connection.onAccountChange(
             shieldedAccount.publicKey,
             (updatedAccountInfo, _) => {
                 //when SOL value changes, do something
@@ -145,17 +120,13 @@ async function activate() {
             'confirmed',
         );
 
-        unsubscribeToShieldStatus();
-        await subSetAsync('shield_status', 'activated');
-        await subSetAsync('set-next-action', 'none');
-        subscribeToShieldStatus();
         console.log('Shield Activated.');
         twilio.sendNotification('Solana Shield activated.');
 
-        currentStatus = "activated";
+        currentStatus = true;
+        db.updateShieldStatusDB(true);
 
     } catch (err) {
-        await subSetAsync("shield_status", "disactivated");
         console.log('Could not activate shield for some reason.');
         console.log(err);
     }
@@ -196,31 +167,19 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         twilio.sendNotification('Solana Shield protected ' + amount / 1000000000 + ' SOL');
         twilio.sendNotification('https://solscan.io/tx/' + result);
 
-        addTotalShielded(amount / 1000000000);
         return amount / 1000000000;
     } catch (err) {
         console.log('Cannot transfer funds, probably not enough SOL. Trying to shield again.');
+        console.log(err);
         if (attempt > 5) {
             shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
         } else if (attempt > 50) { // must lower total attempts since 50 * tx fee is not economical
             console.log(err);
             console.log('Could not shield. Maybe high network congestion.');
             twilio.sendNotification('Could not shield transaction. Check your server logs and SOL wallet immediately.');
-        } else {
-            shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
-        }
+        } 
     }
 
-}
-
-async function addTotalShielded(balance) {
-    try {
-        let currentTotalShielded = subscriber.get('totalShielded');
-        currentTotalShielded += balance;
-        subSetAsync('totalShielded', currentTotalShielded);
-    } catch (err) {
-        console.log(err);
-    }
 }
 
 start();
