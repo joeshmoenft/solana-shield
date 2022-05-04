@@ -21,7 +21,8 @@
     "twilio": "^3.76.1",
     "utf-8-validate": "^5.0.9",
     "ws": "^8.5.0",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "pg-listen": "^1.7.0"
   },
   "scripts": {
     "start": "nf start"

@@ -7,8 +7,19 @@ const pool = new Pool({
     ssl: false
 });
 
+const createSubscriber = require('pg-listen');
+
+const subscriber = createSubscriber({
+    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
+});
+
+subscriber.connect();
+
+
+
+
+
 async function getShieldStatusDB () {
-    console.log('Trying to get shield status');
     const getShieldStatusQuery = 'SELECT * FROM shield WHERE id = $1';
     const values = [1];
 
@@ -26,33 +37,26 @@ async function getShieldStatusDB () {
 }
 
 async function updateShieldStatusDB (status) {
+    console.log('Updating Shield Status in DB to: ', status);
 
-    const currrentShieldStatus = await getShieldStatusDB();
+    const currentStatus = await getShieldStatusDB();
 
-    console.log('Current Shield Status: ', currrentShieldStatus);
-
-    if (!currrentShieldStatus) {
-        console.log('Shield Status not set in DB, need to init DB');
-        initDB();
-    } else {
-        return;s
-    }
-
-    console.log('Current Shield Status')
-    if (typeof status !== 'boolean') {
-        console.log('Status not true or false. Could not update status.');
+    if (typeof status !== 'boolean' && status == currentStatus) {
+        console.log('Status not true or false. OR its already set');
         return;
     } else {
         const setShieldStatusQuery = 'UPDATE shield SET status = $2 WHERE id = $1';
         const values = [1, status];
-        pool.query(setShieldStatusQuery, values, function(err, result) {
+        pool.query(setShieldStatusQuery, values).then((result, err) => {
             if (err) {
                 console.log('Could not update Shield Status DB.');
                 console.log(err.stack);
             } else {
                 console.log('Shield Status DB Updated to: ', status);
+                subscriber.notify('shield_update', status);
+                return true;
             }
-        });
+        });  
     }  
 }
 

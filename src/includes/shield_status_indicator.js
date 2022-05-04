@@ -30,6 +30,8 @@ class ShieldStatus extends React.Component {
             const response = await fetch('status/', {method: 'GET'});
             const shield_status = await response.text();
 
+            console.log('retrieved shield status: ', shield_status);
+
             if (shield_status !== this.state.status) {
                 this.setState({
                     status: shield_status
@@ -90,7 +92,7 @@ class ShieldStatus extends React.Component {
                 {className: "glow-on-hover disabled"},
                 'Loading...'
             );
-        } else if (this.state.status == "activated") {
+        } else if (this.state.status == "true") {
             return e('button',
                 {
                     onClick: () => this.disableShield(),
@@ -98,7 +100,7 @@ class ShieldStatus extends React.Component {
                 },
                 'Deactivate'
             );
-        } else if (this.state.status == "deactivated") {
+        } else if (this.state.status == "false") {
             return e('button',
                 {
                     onClick: () => this.enableShield(),
