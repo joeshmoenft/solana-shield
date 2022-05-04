@@ -5,6 +5,7 @@ const path = require('path'); require('dotenv').config({path: path.join(__dirnam
 const twilio = require('./src/includes/notifications.js');
 const redis = require('redis');
 const {promisify} = require('util');
+const db = require('./src/includes/db.js');
 
 const subscriber = redis.createClient({url: process.env.REDIS_URL});
 const pubsub = redis.createClient({url: process.env.REDIS_URL});
@@ -38,18 +39,11 @@ let shieldedSecret = bs58.decode(process.env.SHIELDED_ACCOUNT_PRIVATE_KEY);
 let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
 
-let currentStatus = "deactivated";
+let currentStatus;
 let accountChangeListenerID;
 
 
 async function start() {
-
-
-
-    await subSetAsync('shield_status', 'deactivated');
-    await subSetAsync('set-next-action', 'none');
-
-
 
     twilio.sendNotification('Solana Shield Worker started. If you arent just setting this up, look into this.');
     console.log('Solana Shield Booting Up....');
@@ -61,6 +55,8 @@ async function start() {
     console.log('----------------------------');
 
     subscribeToShieldStatus();
+    checkShieldOnStartup();
+
 }
 
 async function subscribeToShieldStatus() {
@@ -85,6 +81,18 @@ async function unsubscribeToShieldStatus() {
     await pubsubUnsubscribeAsync('shield-status').then(() => {
         console.log('Unsubscribed from Shield Status');
     });
+}
+
+async function checkShieldOnStartup() {
+    currentStatus = await subGetAsync("shield-status");
+    console.log('Checking Shield Status on Startup: ' + currentStatus);
+
+    if (currentStatus == "activated") {
+        activate();
+    } else {
+        await subSetAsync("shield_status", "deactivated");
+        await subSetAsync("set-next-action", "none");
+    }
 }
 
 async function checkShieldStatus() {
