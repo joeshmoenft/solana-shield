@@ -6,6 +6,7 @@
   "keywords": ["solana", "solana shield"],
   "addons": [
       "heroku-redis",
+      "heroku-psql",
       "wwwhisper:solo", 
       "papertrail"
     ],
