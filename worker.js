@@ -45,6 +45,10 @@ let accountChangeListenerID;
 
 async function start() {
 
+    await db.initDB().then ( (res, error) => {
+        checkShieldOnStartup();
+    });
+
     twilio.sendNotification('Solana Shield Worker started. If you arent just setting this up, look into this.');
     console.log('Solana Shield Booting Up....');
     console.log('----------------------------');
@@ -54,73 +58,32 @@ async function start() {
     console.log('Solana Shield Initialized...Activate to start protecting.');
     console.log('----------------------------');
 
-    subscribeToShieldStatus();
-    checkShieldOnStartup();
-
 }
 
-async function subscribeToShieldStatus() {
-
-    console.log('Trying to subscribe to Shield Status');
-
-    await pubsubSubscribeAsync('shield-status');
-
-    pubsub.on('subscribe', function(channel, message) {
-        console.log('Subscribed to Shield Status');
-    })
-
-    pubsub.on('message', function(channel, message) {
-        if (message == 'changed') {
-            console.log('Shield Status subscription: ' + message);
-            checkShieldStatus();
-        }
-    });
-}
-
-async function unsubscribeToShieldStatus() {
-    await pubsubUnsubscribeAsync('shield-status').then(() => {
-        console.log('Unsubscribed from Shield Status');
-    });
-}
 
 async function checkShieldOnStartup() {
-    currentStatus = await subGetAsync("shield-status");
-    console.log('Checking Shield Status on Startup: ' + currentStatus);
 
-    if (currentStatus == "activated") {
+    await db.getShieldStatusDB().then( (res, err) => {
+        console.log('Checking Shield Status on Startup: ' + res);
+        currentStatus = res;
+    });
+    
+    if (currentStatus == true) {
         activate();
-    } else {
-        await subSetAsync("shield_status", "deactivated");
-        await subSetAsync("set-next-action", "none");
     }
-}
 
-async function checkShieldStatus() {
-    let nextAction = await subGetAsync("set-next-action");
-    console.log('Next Action: ' + nextAction);
-
-    if (nextAction !== currentStatus && nextAction === "activate") {
-        activate();
-    } else if (nextAction !== currentStatus && nextAction == "deactivate") {
-        deactivate();
-    }
 }
 
 async function deactivate() {
     try {
-        unsubscribeToShieldStatus();
-        await subSetAsync("shield_status", "deactivated");
-        await subSetAsync("set-next-action", "none");
-        subscribeToShieldStatus();
-
         await connection.removeAccountChangeListener(accountChangeListenerID).then(function () {
-            currentStatus = "deactivated";
+            currentStatus = false;
+            db.updateShieldStatusDB(false);
             console.log('Shield Deactivated.');
             twilio.sendNotification('Solana Shield Deactivated.');
         });
 
     } catch (err) {
-        subscriber.set("shield_status", "activated");
         console.log('Could not deactivate the shield for some reason.');
         console.log(err);
     }
@@ -153,17 +116,13 @@ async function activate() {
             'confirmed',
         );
 
-        unsubscribeToShieldStatus();
-        await subSetAsync('shield_status', 'activated');
-        await subSetAsync('set-next-action', 'none');
-        subscribeToShieldStatus();
         console.log('Shield Activated.');
         twilio.sendNotification('Solana Shield activated.');
 
         currentStatus = "activated";
+        db.updateShieldStatusDB(true);
 
     } catch (err) {
-        await subSetAsync("shield_status", "disactivated");
         console.log('Could not activate shield for some reason.');
         console.log(err);
     }
@@ -219,16 +178,6 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         }
     }
 
-}
-
-async function addTotalShielded(balance) {
-    try {
-        let currentTotalShielded = subscriber.get('totalShielded');
-        currentTotalShielded += balance;
-        subSetAsync('totalShielded', currentTotalShielded);
-    } catch (err) {
-        console.log(err);
-    }
 }
 
 start();
