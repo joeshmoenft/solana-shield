@@ -5,7 +5,6 @@
   "logo": "https://raw.githubusercontent.com/joeshmoenft/solana-shield/main/src/img/logo-medium.png",
   "keywords": ["solana", "solana shield"],
   "addons": [
-      "heroku-redis",
       "heroku-psql",
       "wwwhisper:solo", 
       "papertrail"

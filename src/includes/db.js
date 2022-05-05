@@ -4,7 +4,9 @@ const { AddOnResultInstance } = require('twilio/lib/rest/api/v2010/account/recor
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
-    ssl: false
+    ssl: { //ssl: false for dev
+        rejectUnauthorized: false
+    } 
 });
 
 const createSubscriber = require('pg-listen');
