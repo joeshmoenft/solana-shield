@@ -9,6 +9,9 @@ const createSubscriber = require('pg-listen');
 
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
+    ssl: { //ssl: false for dev
+        rejectUnauthorized: false
+    } 
 });
 
 subscriber.notifications.on('shield_update', msg => {
