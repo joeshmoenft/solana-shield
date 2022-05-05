@@ -12,7 +12,10 @@ const pool = new Pool({
 const createSubscriber = require('pg-listen');
 
 const subscriber = createSubscriber({
-    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 subscriber.connect();
