@@ -5,7 +5,6 @@ const { AddOnResultInstance } = require('twilio/lib/rest/api/v2010/account/recor
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
-        require: true,
         rejectUnauthorized: false
     } 
 });

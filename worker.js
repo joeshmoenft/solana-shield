@@ -10,7 +10,6 @@ const createSubscriber = require('pg-listen');
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
-        require: true,
         rejectUnauthorized: false
     } 
 });
