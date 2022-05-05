@@ -8,7 +8,7 @@ const db = require('./src/includes/db.js');
 const createSubscriber = require('pg-listen');
 
 const subscriber = createSubscriber({
-    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
+    connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
         rejectUnauthorized: false
     } 

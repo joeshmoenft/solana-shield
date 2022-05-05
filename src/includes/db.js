@@ -3,7 +3,7 @@ const { connectionString } = require('pg/lib/defaults');
 const { AddOnResultInstance } = require('twilio/lib/rest/api/v2010/account/recording/addOnResult');
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/shield_development',
+    connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
         rejectUnauthorized: false
     } 
@@ -16,9 +16,6 @@ const subscriber = createSubscriber({
 });
 
 subscriber.connect();
-
-
-
 
 
 async function getShieldStatusDB () {
