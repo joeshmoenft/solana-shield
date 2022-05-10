@@ -139,6 +139,9 @@ Any vulnerabilities found during this assessment period were addressed by the So
 
 This was a point in time assessment and the Solana Shield team will continue to actively assess the security properties of the software as it is further developed.
 
+## Contribute
+
+Solana Shield is an open source application provided to the community as-is. If you see ways you can improve it, feel free to submit a pull request. Any questions DM [@rhh4x0r](https://twitter.com/rhh4x0r) on Twitter.
 ## Questions / Support
 
 Solana Shield is provided as-is to the community. If you would like support / help setting this up, buy yourself Joe NFT on Magic Eden [here](https://magiceden.io/marketplace/joe_shmoes_notsoaverage_club) and join our [Discord channel](https://discord.gg/joeshmoenft).
