@@ -9,10 +9,17 @@ const createSubscriber = require('pg-listen');
 
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL,
+    ssl: false
+});
+
+/* Prod
+const subscriber = createSubscriber({
+    connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
         rejectUnauthorized: false
     } 
 });
+*/
 
 subscriber.notifications.on('shield_update', msg => {
     if (msg == true && msg != currentStatus) {
@@ -97,17 +104,39 @@ async function deactivate() {
 
 }
 
+async function getSOLBalance() {
+    const balance = await connection.getBalance(shieldedAccount.publicKey)
+            .then((result) => {
+                console.log('Current balance: %s', result)
+                return result;
+            })
+            .catch((error) => {
+                console.log('Error getting balance. Solana/API is probably down.');
+                console.log(error); 
+                return error;
+            });
+}
+
 async function activate() {
     try {
         console.log('||||| Shield Activating... |||||');
 
-        const balance = await connection.getBalance(shieldedAccount.publicKey)
-            .then((result) => console.log('Current balance: %s', result))
-            .catch((error) => {
-                console.log('Error getting balance. Solana/API is probably down.');
-                console.log(error);
-            });
+
+        let balanceAttempts = 0;
+
+        const balance = await getSOLBalance().catch((error) => {
+
+            balanceAttempts++;
+            //Try again 
+
+            if (balanceAttempts < 20) {
+                setTimeout(() => {
+                    getSOLBalance();
+            }, balanceAttempts * 10000);
+            } 
         
+        });
+
         checkBalanceToProtect(balance);
 
         //When new transaction is detected, run this
@@ -172,11 +201,18 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
 
         return amount / 1000000000;
     } catch (err) {
-        console.log('Cannot transfer funds, probably not enough SOL. Trying to shield again.');
+        console.log('Cannot transfer funds, probably not enough SOL or network is congestd. Trying to shield again.');
         console.log(err);
+        if (attempt < 5) {
+            setTimeout(() => {
+                shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
+            }, 100000);
+        }
         if (attempt > 5) {
-            shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
-        } else if (attempt > 50) { // must lower total attempts since 50 * tx fee is not economical
+            setTimeout(() => {
+                shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
+            }, 100000);
+        } else if (attempt > 10) { 
             console.log(err);
             console.log('Could not shield. Maybe high network congestion.');
             twilio.sendNotification('Could not shield transaction. Check your server logs and SOL wallet immediately.');
