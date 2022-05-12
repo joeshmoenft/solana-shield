@@ -64,6 +64,9 @@ if (shieldedAccount.publicKey == recoveryAccount) {
 let currentStatus;
 let accountChangeListenerID;
 
+//shield attempt for logic on Solana Network congestion or error
+let attempt = 0;
+
 
 async function start() {
 
@@ -187,7 +190,6 @@ async function checkBalanceToProtect(balance) {
 }
 
 async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount) {
-    let attempt = 0;
     let transaction = new solanaWeb3.Transaction();
     let recoveryAccountPK = new solanaWeb3.PublicKey(recoveryAccount);
 
@@ -206,21 +208,22 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         console.log('Shielded ' + amount / 1000000000 + 'SOL.');
         twilio.sendNotification('Solana Shield protected ' + amount / 1000000000 + ' SOL');
         twilio.sendNotification('https://solscan.io/tx/' + result);
-
+        attempt = 0;
         return amount / 1000000000;
     } catch (err) {
         console.log('Cannot transfer funds, probably not enough SOL or network is congestd. Trying to shield again.');
+        twilio.sendNotification('Balance of ' + amount / 1000000000, ' found but could not protect. Retrying...');
         console.log(err);
         if (attempt < 5) {
             setTimeout(() => {
-                shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount);
-            }, 100000);
+                checkBalanceToProtect(amount);
+            }, 100000); //100 seconds
         }
         if (attempt > 5) {
             setTimeout(() => {
-                shieldTransaction(amount - 5000, shieldedAccountKeypair, recoveryAccount);
-            }, 100000);
-        } else if (attempt > 10) { 
+                checkBalanceToProtect(amount-5000);
+            }, 300000); // 5 minutes
+        } else if (attempt > 50) { 
             console.log(err);
             console.log('Could not shield. Maybe high network congestion.');
             twilio.sendNotification('Could not shield transaction. Check your server logs and SOL wallet immediately.');
