@@ -7,19 +7,20 @@ const {promisify} = require('util');
 const db = require('./src/includes/db.js');
 const createSubscriber = require('pg-listen');
 
+/* dev
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL,
     ssl: false
 });
+*/
 
-/* Prod
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
         rejectUnauthorized: false
     } 
 });
-*/
+
 
 subscriber.notifications.on('shield_update', msg => {
     if (msg == true && msg != currentStatus) {

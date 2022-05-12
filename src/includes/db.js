@@ -2,6 +2,14 @@ const { Pool } = require('pg');
 const { connectionString } = require('pg/lib/defaults');
 const { AddOnResultInstance } = require('twilio/lib/rest/api/v2010/account/recording/addOnResult');
 
+/* dev
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: false
+});
+*/
+
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { //ssl: false for dev
@@ -9,7 +17,15 @@ const pool = new Pool({
     } 
 });
 
+
 const createSubscriber = require('pg-listen');
+
+/* dev
+const subscriber = createSubscriber({
+    connectionString: process.env.DATABASE_URL,
+    ssl: false
+});
+*/
 
 const subscriber = createSubscriber({
     connectionString: process.env.DATABASE_URL,
@@ -17,6 +33,7 @@ const subscriber = createSubscriber({
         rejectUnauthorized: false
     }
 });
+
 
 subscriber.connect();
 
