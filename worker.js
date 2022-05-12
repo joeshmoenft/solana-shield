@@ -212,7 +212,7 @@ async function shieldTransaction(amount, shieldedAccountKeypair, recoveryAccount
         return amount / 1000000000;
     } catch (err) {
         console.log('Cannot transfer funds, probably not enough SOL or network is congestd. Trying to shield again.');
-        twilio.sendNotification('Balance of ' + amount / 1000000000, ' found but could not protect. Retrying...');
+        twilio.sendNotification('Balance of ' + amount / 1000000000 + ' found but could not protect. Retrying...');
         console.log(err);
         if (attempt < 5) {
             setTimeout(() => {
