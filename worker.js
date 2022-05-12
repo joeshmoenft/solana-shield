@@ -118,7 +118,8 @@ async function deactivate() {
 async function getSOLBalance() {
     const balance = await connection.getBalance(shieldedAccount.publicKey)
             .then((result) => {
-                console.log('Current balance: %s', result)
+                console.log('Current balance: %s', result);
+                checkBalanceToProtect(result);
                 return result;
             })
             .catch((error) => {
