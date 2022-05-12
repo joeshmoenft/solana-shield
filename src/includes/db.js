@@ -93,6 +93,8 @@ async function checkDBStatus () {
 
 async function initDB () {
 
+    console.log('Running DB Initialize');
+
     let dbInitialized = await checkDBStatus();
     
     if (dbInitialized == true) {
