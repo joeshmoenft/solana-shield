@@ -43,6 +43,8 @@ if (!process.env.NETWORK) {
     console.log('Please select a network in your ENV variables.'); //needs mainnet-beta or devnet
 }
 
+
+
 const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl(process.env.NETWORK), 'confirmed');
 
 if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_ADDRESS) {
@@ -52,6 +54,11 @@ if (!process.env.SHIELDED_ACCOUNT_PRIVATE_KEY && !process.env.RECOVERY_ACCOUNT_A
 let shieldedSecret = bs58.decode(process.env.SHIELDED_ACCOUNT_PRIVATE_KEY);
 let shieldedAccount = Keypair.fromSecretKey(shieldedSecret);
 let recoveryAccount = process.env.RECOVERY_ACCOUNT_ADDRESS;
+
+//check to see if pubkey and recovery address are the same account to prevent draining
+if (shieldedAccount.publicKey == recoveryAccount) {
+    throw new Error("Your Shielded acccount and Recovery account cannot be the same.");
+}
 
 let currentStatus;
 let accountChangeListenerID;
