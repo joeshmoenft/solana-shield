@@ -120,7 +120,11 @@ See this how-to for more info: https://www.papertrail.com/help/alerts/
 
 ## Audits
 
-Security testing of [Solana Shield](https://github.com/joeshmoenft/solana-shield/) was carried out during the week of April 25-29 2022 by a member of the [@JoeShmoeNFT](https://twitter.com/joeshmoenft) community with years of professional security experience. The following threats were prioritized during the assessment:
+Solana Shield goes through periodic security assessments as new features are added. The assessments are primarily done by a member of the [@JoeShmoeNFT](https://twitter.com/joeshmoenft) community with years of professional security experience (although outside assessments and reports are most welcome). Any vulnerabilities found during these assessment periods are addressed by the Solana Shield team. The following sub-sections record the specifics for each assessment cycle.
+
+### April 25-29
+
+An initial security assessment of Solana Shield was carried out during the week of April 25-29 2022. The following threats were prioritized during the assessment:
 
 - [Authentication failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/).
   - Broken integration of [wwwhisper](https://github.com/wrr/wwwhisper).
@@ -135,9 +139,18 @@ Security testing of [Solana Shield](https://github.com/joeshmoenft/solana-shield
 - [Cross-Site Request Forgery](https://owasp.org/www-community/attacks/csrf) vulnerabilities that would allow an attacker to coerce a target into performing actions on their Solana Shield instance, such as disabling it.
 - [Known vulnerabilities](https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/) in the infrastructure and software components used to implement Solana Shield.
 
-Any vulnerabilities found during this assessment period were addressed by the Solana Shield team.
 
-This was a point in time assessment and the Solana Shield team will continue to actively assess the security properties of the software as it is further developed.
+### May 9-13
+
+Solana Shield recently switched from [Heroku Redis](https://elements.heroku.com/addons/heroku-redis) to [Heroku Postgres](https://elements.heroku.com/addons/heroku-postgresql) for storing some application and user state. After the switch, the software was assessed with a focus on the following threats:
+
+- [Cryptographic failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)
+  - Lack of encryption in transit (TLS) from the Heroku Dyno instance to the PostgreSQL instance running in AWS.
+  - Property storage of database credentials.
+- [Injection](https://owasp.org/Top10/A03_2021-Injection/)
+  - SQL injection vulnerabilities that could lead to unauthorized access or tampering of application state. Most importantly, tampering that lead to disabling the shield entirely.
+- [Security Misconfiguration](https://owasp.org/Top10/A05_2021-Security_Misconfiguration/).
+  - Insecure configuration and deployment of the database instances.
 
 ## Contribute
 
